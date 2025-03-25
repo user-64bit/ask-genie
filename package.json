@@ -1,9 +1,9 @@
 {
   "name": "ask-genie",
-  "displayName": "ask-genie",
-  "version": "0.0.0",
+  "displayName": "Ask Genie",
+  "version": "0.0.1",
   "author": "user-64bit",
-  "description": "",
+  "description": "A floating AI assistant that allows users to ask questions about the current webpage",
   "type": "module",
   "license": "MIT",
   "keywords": [
@@ -23,6 +23,8 @@
     "zip": "npm run build && node src/zip.js"
   },
   "dependencies": {
+    "@motionone/dom": "^10.18.0",
+    "motion": "^12.6.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

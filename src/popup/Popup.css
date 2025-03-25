@@ -51,3 +51,139 @@ a {
   color: #cccccc;
   text-decoration: none;
 }
+
+/* Popup Styles for Ask-Genie */
+
+.popup-container {
+  width: 100%;
+  min-height: 280px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+  color: #4a4a4a;
+  background-color: white;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(108, 92, 231, 0.15);
+  opacity: 0; /* Start invisible for animation */
+}
+
+.popup-header {
+  background-color: #6c5ce7;
+  background-image: linear-gradient(to right, #6c5ce7, #8a7bea);
+  color: white;
+  padding: 20px;
+  text-align: center;
+  opacity: 0; /* Start invisible for animation */
+}
+
+.popup-header h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.popup-subtitle {
+  font-size: 14px;
+  opacity: 0.9;
+  margin-top: 6px;
+  opacity: 0; /* Start invisible for animation */
+}
+
+.popup-content {
+  padding: 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.status-section {
+  margin-bottom: 20px;
+}
+
+.status-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 14px;
+  background-color: #f8f9fa;
+  padding: 12px 16px;
+  border-radius: 8px;
+  opacity: 0; /* Start invisible for animation */
+}
+
+.status-label {
+  font-weight: 600;
+  color: #4a4a4a;
+}
+
+.status-value {
+  font-weight: 500;
+}
+
+.status-success {
+  color: #27ae60;
+}
+
+.status-error {
+  color: #e74c3c;
+}
+
+.status-info {
+  color: #3498db;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.popup-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.popup-button {
+  flex: 1;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  opacity: 0; /* Start invisible for animation */
+}
+
+.settings-button {
+  background-color: #6c5ce7;
+  color: white;
+}
+
+.settings-button:hover {
+  background-color: #5d4aeb;
+}
+
+.docs-button {
+  background-color: #f1f3f5;
+  color: #4a4a4a;
+  border: 1px solid #e9ecef;
+}
+
+.docs-button:hover {
+  background-color: #e9ecef;
+}
+
+.popup-footer {
+  padding: 12px;
+  text-align: center;
+  border-top: 1px solid #f1f3f5;
+  opacity: 0; /* Start invisible for animation */
+}
+
+.popup-version {
+  font-size: 12px;
+  color: #999;
+}
