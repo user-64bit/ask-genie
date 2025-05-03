@@ -187,3 +187,77 @@ a {
   font-size: 12px;
   color: #999;
 }
+
+/* Add these styles to the existing CSS */
+
+.password-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 16px;
+}
+
+.password-form h3 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.password-form p {
+  margin-bottom: 16px;
+  font-size: 14px;
+  text-align: center;
+  color: #666;
+}
+
+.password-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.auth-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #4285f4;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.auth-button:hover {
+  background-color: #3b78e7;
+}
+
+.auth-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.auth-error {
+  color: #e53935;
+  font-size: 14px;
+  margin: -10px 0 10px 0;
+  text-align: center;
+}
+
+.loading-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  font-size: 16px;
+  color: #666;
+}
+
+/* Animation classes */
+.animate-in {
+  opacity: 0;
+}

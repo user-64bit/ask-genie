@@ -112,4 +112,87 @@
 
 .ask-genie-send:hover {
   background-color: #5d4aeb;
+}
+
+/* Add authentication UI styles */
+
+.ask-genie-auth {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+  width: 100%;
+}
+
+.ask-genie-auth h4 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  color: #333;
+  font-size: 18px;
+}
+
+.ask-genie-auth p {
+  margin-bottom: 16px;
+  font-size: 14px;
+  text-align: center;
+  color: #666;
+}
+
+.ask-genie-password {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.ask-genie-auth-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #4285f4;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.ask-genie-auth-button:hover {
+  background-color: #3b78e7;
+}
+
+.ask-genie-auth-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.ask-genie-auth-error {
+  color: #e53935;
+  font-size: 14px;
+  margin: 8px 0;
+  text-align: center;
+}
+
+/* User and AI message styles */
+.ask-genie-message {
+  padding: 10px;
+  margin: 10px;
+  border-radius: 8px;
+  max-width: 80%;
+}
+
+.user-message {
+  background-color: #e3f2fd;
+  align-self: flex-end;
+  margin-left: auto;
+}
+
+.ai-message {
+  background-color: #f1f1f1;
+  align-self: flex-start;
+  margin-right: auto;
 } 
