@@ -1,13 +1,19 @@
 :root {
-  --bg: #ffffff;
-  --panel: #f6f6fb;
-  --text: #1c1c28;
-  --muted: #6b7280;
-  --border: #e6e6f0;
-  --accent: #6c5ce7;
-  --accent-700: #5a4bd4;
-  --ok: #16a34a;
-  --warn: #dc2626;
+  color-scheme: dark;
+  --bg: #0b1020;
+  --text: #eaeafe;
+  --muted: #9aa0c7;
+  --card: rgba(255, 255, 255, 0.045);
+  --card-2: rgba(255, 255, 255, 0.025);
+  --line: rgba(255, 255, 255, 0.1);
+  --line-2: rgba(255, 255, 255, 0.06);
+  --violet: #7c5cff;
+  --violet-2: #a98bff;
+  --gold: #ffc661;
+  --ok: #34d399;
+  --grad: linear-gradient(160deg, #7c5cff, #5a37df);
+  --coin: linear-gradient(150deg, #9a82ff, #5e3ce4 58%, #3a1f9e);
+  --shadow: 0 12px 30px -14px rgba(0, 0, 0, 0.6);
 
   font-family:
     system-ui,
@@ -19,11 +25,40 @@
   color: var(--text);
 }
 
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: light;
+    --bg: #f5f5fe;
+    --text: #1b1b3a;
+    --muted: #5b6080;
+    --card: #ffffff;
+    --card-2: #fbfbff;
+    --line: rgba(24, 22, 60, 0.1);
+    --line-2: rgba(24, 22, 60, 0.07);
+    --violet-2: #6a47f5;
+    --ok: #16a34a;
+    --shadow: 0 12px 28px -16px rgba(24, 22, 60, 0.25);
+  }
+}
+
 * {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  background: var(--bg);
+  width: 340px;
+  color: var(--text);
+  background:
+    radial-gradient(125% 80% at 85% -15%, rgba(124, 92, 255, 0.2), transparent 60%),
+    radial-gradient(110% 70% at -15% 115%, rgba(255, 198, 97, 0.09), transparent 55%), var(--bg);
+}
+
+.ag-svg {
+  display: inline-flex;
+}
+.ag-svg svg {
+  display: block;
+  width: 100%;
+  height: 100%;
 }

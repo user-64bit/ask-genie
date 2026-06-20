@@ -1,2 +1,31 @@
-<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg t="1656468723058" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3824" width="256" height="256" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><style type="text/css">@font-face { font-family: feedback-iconfont; src: url("//at.alicdn.com/t/font_1031158_u69w8yhxdu.woff2?t=1630033759944") format("woff2"), url("//at.alicdn.com/t/font_1031158_u69w8yhxdu.woff?t=1630033759944") format("woff"), url("//at.alicdn.com/t/font_1031158_u69w8yhxdu.ttf?t=1630033759944") format("truetype"); }
-</style></defs><path d="M512 0C228.266667 0 0 228.266667 0 512s228.266667 512 512 512 512-228.266667 512-512S795.733333 0 512 0z m224 727.466667c0 23.466667-17.066667 40.533333-40.533333 40.533333H328.533333c-21.333333 0-40.533333-19.2-40.533333-40.533333V296.533333c0-23.466667 17.066667-40.533333 40.533333-40.533333h366.933334c21.333333 0 40.533333 19.2 40.533333 40.533333v430.933334z" fill="#61dafb" p-id="3825" data-spm-anchor-id="a313x.7781069.0.i0" class=""></path><path d="M473.6 727.466667h221.866667V411.733333H473.6v315.733334zM328.533333 727.466667h106.666667V411.733333h-106.666667v315.733334zM328.533333 296.533333v74.666667h369.066667V298.666667H328.533333z" fill="#61dafb" p-id="3826" data-spm-anchor-id="a313x.7781069.0.i2" class=""></path></svg>
+<svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="coin1" x1="14" y1="10" x2="116" y2="120" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#9A82FF"/>
+      <stop offset="0.55" stop-color="#5E3CE4"/>
+      <stop offset="1" stop-color="#3A1F9E"/>
+    </linearGradient>
+    <radialGradient id="glow3" cx="62" cy="58" r="46" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFE3A8" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#FFE3A8" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="brass2" x1="60" y1="55" x2="60" y2="104" gradientUnits="userSpaceOnUse">
+  <stop offset="0" stop-color="#FFE7A6"/>
+  <stop offset="0.5" stop-color="#F6BC57"/>
+  <stop offset="1" stop-color="#E2902C"/></linearGradient>
+  </defs>
+  <rect x="2" y="2" width="124" height="124" rx="30" fill="url(#coin1)"/>
+  <rect x="2.75" y="2.75" width="122.5" height="122.5" rx="29.25" fill="none" stroke="#FFFFFF" stroke-opacity="0.14" stroke-width="1.5"/>
+  <path d="M14 30C44 18 84 18 114 30C114 30 110 6 64 6C18 6 14 30 14 30Z" fill="#FFFFFF" opacity="0.10"/>
+  <ellipse cx="62" cy="60" rx="48" ry="40" fill="url(#glow3)"/>
+  
+    <path d="M34 82C24 76 16.5 66 13.5 57.5C22 63.5 32 71 42.5 80Z" fill="url(#brass2)"/>
+    <path d="M88 78C104 74 106.5 92 86.5 91.5" fill="none" stroke="#EFA63A" stroke-width="7.5" stroke-linecap="round"/>
+    <path d="M26 84C26 73 41 66.5 60 66.5C79 66.5 94 73 94 84C94 91 80 97 60 97C40 97 26 91 26 84Z" fill="url(#brass2)"/>
+    <path d="M36 79C44.5 74 75.5 74 84 79C75.5 82 44.5 82 36 79Z" fill="#FFFFFF" opacity="0.28"/>
+    <circle cx="60" cy="61.5" r="5" fill="url(#brass2)"/>
+    <path d="M50.5 97L69.5 97L66 104L54 104Z" fill="url(#brass2)"/>
+    <path d="M95 29.5C96.2 37.8 99 40.8 107.5 42C99 43.2 96.2 46.2 95 54.5C93.8 46.2 91 43.2 82.5 42C91 40.8 93.8 37.8 95 29.5Z" fill="#FFF7DD"/>
+    <circle cx="78.5" cy="31.5" r="2.1" fill="#FFF7DD"/>
+    <circle cx="106" cy="60" r="1.6" fill="#FFF7DD" opacity="0.85"/>
+</svg>

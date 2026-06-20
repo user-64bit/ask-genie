@@ -9,10 +9,13 @@ import {
   type Provider,
   type Settings,
 } from '../lib/config'
+import { sendMessage } from '../lib/messages'
 import { PROVIDERS, defaultModelFor, isKnownModel } from '../lib/providers'
+import { Coin, Icon } from '../ui/Brand'
 import './Options.css'
 
 type Status = 'idle' | 'saving' | 'saved'
+type ClearState = 'idle' | 'confirm' | 'done'
 
 export const Options = () => {
   const [provider, setProvider] = useState<Provider>('openai')
@@ -21,6 +24,7 @@ export const Options = () => {
   const [showKey, setShowKey] = useState(false)
   const [settings, setSettingsState] = useState<Settings>(DEFAULT_SETTINGS)
   const [status, setStatus] = useState<Status>('idle')
+  const [clearState, setClearState] = useState<ClearState>('idle')
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -59,54 +63,77 @@ export const Options = () => {
     setTimeout(() => setStatus('idle'), 2000)
   }
 
+  const clearAll = async () => {
+    if (clearState !== 'confirm') {
+      setClearState('confirm')
+      setTimeout(() => setClearState((s) => (s === 'confirm' ? 'idle' : s)), 4000)
+      return
+    }
+    await sendMessage({ type: 'CLEAR_ALL' })
+    setClearState('done')
+    setTimeout(() => setClearState('idle'), 2500)
+  }
+
   return (
-    <main className="options">
-      <header className="options-head">
-        <span className="options-logo" aria-hidden="true">
-          🧞
-        </span>
+    <main className="opt">
+      <div className="opt-glow" aria-hidden="true" />
+      <header className="opt-head">
+        <Coin className="opt-badge" />
         <div>
-          <h1>Ask Genie</h1>
-          <p className="options-tagline">AI assistant for any web page</p>
+          <h1 className="opt-title">Ask Genie</h1>
+          <p className="opt-tagline">Settings · bring your own AI key</p>
         </div>
       </header>
 
-      <section className="card">
-        <h2>AI provider</h2>
-        <p className="hint">
-          Ask Genie uses your own API key. It is stored locally in your browser, sent only to the
-          provider you choose, and never to any Ask Genie server.
-        </p>
+      <section className="opt-card">
+        <div className="opt-card-head">
+          <span className="opt-card-ic">
+            <Icon name="key" />
+          </span>
+          <div>
+            <h2>AI provider</h2>
+            <p className="opt-card-sub">
+              Your key is stored locally, sent only to the provider you pick, and never to any Ask
+              Genie server.
+            </p>
+          </div>
+        </div>
 
-        <label className="field">
-          <span>Provider</span>
-          <select
-            value={provider}
-            onChange={(e) => onProviderChange(e.target.value as Provider)}
-            disabled={loading}
-          >
-            {(Object.keys(PROVIDERS) as Provider[]).map((p) => (
-              <option key={p} value={p}>
-                {PROVIDERS[p].label}
-              </option>
-            ))}
-          </select>
+        <label className="opt-field">
+          <span className="opt-label">Provider</span>
+          <div className="opt-select">
+            <select
+              value={provider}
+              onChange={(e) => onProviderChange(e.target.value as Provider)}
+              disabled={loading}
+            >
+              {(Object.keys(PROVIDERS) as Provider[]).map((p) => (
+                <option key={p} value={p}>
+                  {PROVIDERS[p].label}
+                </option>
+              ))}
+            </select>
+            <Icon name="chevron" />
+          </div>
         </label>
 
-        <label className="field">
-          <span>Model</span>
-          <select value={model} onChange={(e) => setModel(e.target.value)} disabled={loading}>
-            {info.models.map((m) => (
-              <option key={m.id} value={m.id}>
-                {m.label}
-              </option>
-            ))}
-          </select>
+        <label className="opt-field">
+          <span className="opt-label">Model</span>
+          <div className="opt-select">
+            <select value={model} onChange={(e) => setModel(e.target.value)} disabled={loading}>
+              {info.models.map((m) => (
+                <option key={m.id} value={m.id}>
+                  {m.label}
+                </option>
+              ))}
+            </select>
+            <Icon name="chevron" />
+          </div>
         </label>
 
-        <label className="field">
-          <span>API key</span>
-          <div className="key-row">
+        <label className="opt-field">
+          <span className="opt-label">API key</span>
+          <div className={`opt-key ${keyLooksWrong ? 'is-wrong' : ''}`}>
             <input
               type={showKey ? 'text' : 'password'}
               value={apiKey}
@@ -116,54 +143,101 @@ export const Options = () => {
               autoComplete="off"
               disabled={loading}
             />
-            <button type="button" className="ghost" onClick={() => setShowKey((s) => !s)}>
-              {showKey ? 'Hide' : 'Show'}
+            <button
+              type="button"
+              className="opt-key-toggle"
+              onClick={() => setShowKey((s) => !s)}
+              aria-label={showKey ? 'Hide API key' : 'Show API key'}
+              title={showKey ? 'Hide' : 'Show'}
+            >
+              <Icon name={showKey ? 'eyeOff' : 'eye'} />
             </button>
           </div>
           {keyLooksWrong && (
-            <span className="warn">
+            <span className="opt-warn">
               That doesn’t look like a {info.label} key (expected “{info.apiKeyPrefix}…”).
             </span>
           )}
-          <a className="hint-link" href={info.consoleUrl} target="_blank" rel="noopener noreferrer">
-            Get a {info.label} key →
+          <a className="opt-link" href={info.consoleUrl} target="_blank" rel="noopener noreferrer">
+            Get a {info.label} key
+            <Icon name="external" />
           </a>
         </label>
       </section>
 
-      <section className="card">
-        <h2>Chat &amp; privacy</h2>
-        <label className="check">
+      <section className="opt-card">
+        <div className="opt-card-head">
+          <span className="opt-card-ic">
+            <Icon name="shield" />
+          </span>
+          <div>
+            <h2>Chat &amp; privacy</h2>
+            <p className="opt-card-sub">Control how long conversations live in your browser.</p>
+          </div>
+        </div>
+
+        <label className="opt-switch">
           <input
             type="checkbox"
             checked={settings.autoClearChats}
             onChange={(e) => setSettingsState((s) => ({ ...s, autoClearChats: e.target.checked }))}
             disabled={loading}
           />
-          <span>
+          <span className="opt-switch-track" aria-hidden="true" />
+          <span className="opt-switch-text">
             Auto-delete each chat 24 hours after it starts
             <small>Keeps stored history small.</small>
           </span>
         </label>
-        <label className="check">
+
+        <label className="opt-switch">
           <input
             type="checkbox"
             checked={settings.clearOnTabClose}
             onChange={(e) => setSettingsState((s) => ({ ...s, clearOnTabClose: e.target.checked }))}
             disabled={loading}
           />
-          <span>
+          <span className="opt-switch-track" aria-hidden="true" />
+          <span className="opt-switch-text">
             Clear a page’s chat when its tab closes
             <small>Best-effort, for privacy-conscious browsing.</small>
           </span>
         </label>
+
+        <div className="opt-danger">
+          <div className="opt-danger-text">
+            <strong>Clear all chats now</strong>
+            <small>Removes every stored conversation across all pages.</small>
+          </div>
+          <button
+            type="button"
+            className={`opt-danger-btn ${clearState !== 'idle' ? 'is-active' : ''}`}
+            onClick={clearAll}
+            disabled={loading || clearState === 'done'}
+          >
+            {clearState === 'idle' && (
+              <>
+                <Icon name="trash" />
+                Clear all
+              </>
+            )}
+            {clearState === 'confirm' && 'Click again to confirm'}
+            {clearState === 'done' && (
+              <>
+                <Icon name="check" />
+                Cleared
+              </>
+            )}
+          </button>
+        </div>
       </section>
 
-      <div className="actions">
-        <button className="primary" onClick={save} disabled={loading || status === 'saving'}>
-          {status === 'saving' ? 'Saving…' : 'Save settings'}
+      <div className="opt-actions">
+        <button className="opt-save" onClick={save} disabled={loading || status === 'saving'}>
+          {status === 'saving' ? 'Saving…' : status === 'saved' ? 'Saved' : 'Save settings'}
+          {status === 'saved' && <Icon name="check" />}
         </button>
-        {status === 'saved' && <span className="saved-note">Saved ✓</span>}
+        <span className="opt-foot">Private by design · no backend · no telemetry</span>
       </div>
     </main>
   )

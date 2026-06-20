@@ -199,7 +199,7 @@ Nothing is uploaded elsewhere.
 The key is stored in `chrome.storage.local`, which is sandboxed per extension
 and not readable by web pages or other extensions.
 
-Just as important is where the key is *not*:
+Just as important is where the key is _not_:
 
 1. It is held only by the background service worker.
 2. It never enters the content script or any web page.

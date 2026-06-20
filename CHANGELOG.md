@@ -9,6 +9,19 @@ Summary
   5. version timestamp follow the yyyy.MM.dd format
 ```
 
+## Unreleased
+
+- feat: "Mystic Lamp" visual identity — custom genie-lamp logo (SVG → all icon
+  sizes) replacing the boilerplate mark, indigo-night glass UI, violet/gold
+  palette, and a summon animation on the on-page panel
+- feat: dark/light theming that follows `prefers-color-scheme` across the bubble,
+  panel, popup, and settings
+- feat: redesigned popup (status + onboarding) and settings (glass cards, custom
+  switches, key field) with the new brand
+- feat: "Translate" quick action; "Clear all chats" control in settings
+- chore: single-source brand marks (`src/ui/marks.ts`) + reproducible icon
+  generation (`bun run icons` via `@resvg/resvg-js`)
+
 ## 0.1.0 [2026.06.20]
 
 - feat: working on-page AI chat — extract page content, ask OpenAI/Anthropic via

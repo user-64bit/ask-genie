@@ -1,122 +1,235 @@
-.popup {
-  width: 320px;
-  padding: 16px;
+.pp {
+  padding: 18px 16px 14px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 13px;
 }
 
-.popup-head {
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.pp-head {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
-
-.popup-logo {
-  font-size: 28px;
-  line-height: 1;
+.pp-badge {
+  width: 42px;
+  height: 42px;
+  flex: none;
+  filter: drop-shadow(0 6px 16px rgba(91, 52, 224, 0.45));
 }
-
-.popup-head h1 {
+.pp-headtext {
+  min-width: 0;
+}
+.pp-title {
   margin: 0;
-  font-size: 17px;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
 }
-
-.popup-sub {
+.pp-tagline {
   margin: 2px 0 0;
   font-size: 12px;
   color: var(--muted);
 }
 
-.popup-loading {
-  color: var(--muted);
-  font-size: 13px;
-  padding: 8px 0;
+/* ── Cards ───────────────────────────────────────────────────────────────── */
+.pp-card {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--card);
+  box-shadow: var(--shadow);
 }
 
-.status {
+.pp-ready {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 14px;
+}
+.pp-pulse {
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--ok);
+  box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.55);
+  animation: pp-pulse 2.4s ease-out infinite;
+}
+@keyframes pp-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 9px rgba(52, 211, 153, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0);
+  }
+}
+.pp-ready-text {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 12px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: var(--panel);
+  min-width: 0;
 }
-
-.status strong {
+.pp-ready-text strong {
   font-size: 14px;
+  font-weight: 650;
 }
-
-.status span {
-  font-size: 12.5px;
+.pp-meta {
+  font-size: 12px;
   color: var(--muted);
+  margin-top: 1px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.status.ok {
-  border-left: 3px solid var(--ok);
+.pp-onboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 5px;
+  padding: 20px 18px 18px;
 }
-
-.status.warn {
-  border-left: 3px solid var(--warn);
+.pp-onboard-lamp {
+  width: 58px;
+  height: 58px;
+  margin-bottom: 4px;
+  filter: drop-shadow(0 8px 20px rgba(255, 198, 97, 0.32));
 }
-
-.popup-tip {
+.pp-onboard strong {
+  font-size: 15px;
+  font-weight: 700;
+}
+.pp-onboard p {
   margin: 0;
   font-size: 12.5px;
-  color: var(--muted);
   line-height: 1.5;
+  color: var(--muted);
 }
 
-.bubble-chip {
-  display: inline-block;
-  transform: translateY(1px);
+.pp-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 14px;
+}
+.pp-sk-line {
+  height: 11px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--line), var(--line-2), var(--line));
+  background-size: 200% 100%;
+  animation: pp-shimmer 1.4s linear infinite;
+}
+.pp-sk-short {
+  width: 55%;
+}
+@keyframes pp-shimmer {
+  to {
+    background-position: -200% 0;
+  }
 }
 
-.popup-actions {
+/* ── Tip ─────────────────────────────────────────────────────────────────── */
+.pp-tip {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px dashed var(--line);
+  background: var(--card-2);
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+.pp-tip-lamp {
+  flex: none;
+  width: 26px;
+  height: 26px;
+}
+
+/* ── Actions ─────────────────────────────────────────────────────────────── */
+.pp-actions {
   display: flex;
   gap: 8px;
 }
-
-.popup button {
+.pp-btn {
   flex: 1;
-  padding: 9px 12px;
-  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px 12px;
+  border-radius: 11px;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  border: 1px solid var(--border);
+  border: 1px solid var(--line);
   transition:
+    filter 0.15s,
     background 0.15s,
     border-color 0.15s,
     transform 0.05s;
 }
-
-.popup button:active {
+.pp-btn svg {
+  width: 16px;
+  height: 16px;
+}
+.pp-btn:active {
   transform: scale(0.98);
 }
-
-.popup .primary {
-  background: var(--accent);
-  border-color: var(--accent);
+.pp-primary {
+  background: var(--grad);
+  border-color: transparent;
   color: #fff;
+  box-shadow: 0 6px 16px -6px rgba(91, 52, 224, 0.6);
 }
-
-.popup .primary:hover {
-  background: var(--accent-700);
+.pp-primary:hover {
+  filter: brightness(1.08);
 }
-
-.popup .ghost {
-  background: #fff;
+.pp-ghost {
+  background: var(--card);
   color: var(--text);
 }
-
-.popup .ghost:hover {
-  border-color: var(--accent);
+.pp-ghost:hover {
+  border-color: var(--violet);
+  color: var(--violet-2);
 }
 
-.popup-foot {
-  text-align: right;
+/* ── Trust + footer ──────────────────────────────────────────────────────── */
+.pp-trust {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+.pp-trust svg {
+  flex: none;
+  width: 15px;
+  height: 15px;
+  color: var(--ok);
+}
+
+.pp-foot {
+  display: flex;
+  align-items: center;
+  gap: 7px;
   font-size: 11px;
   color: var(--muted);
+  opacity: 0.8;
+}
+.pp-foot-sep {
+  opacity: 0.5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pp-pulse,
+  .pp-sk-line {
+    animation: none !important;
+  }
 }

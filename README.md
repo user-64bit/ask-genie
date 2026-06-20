@@ -8,14 +8,17 @@ Built with Vite, React, TypeScript, and [@crxjs/vite-plugin](https://crxjs.dev/)
 
 ## What it does
 
-- A floating 🧞 bubble sits at the bottom-right of every page. Click it to open
-  a chat panel about the current page.
+- A floating **genie lamp** sits at the bottom-right of every page. Click it to
+  summon a chat panel about the current page.
 - The extension extracts the page's main content and sends it as context with
   your question, so answers are grounded in what you're reading.
 - One-click **quick actions**: Summarize, Key insights, Explain simply, Action
-  items.
+  items, Translate.
 - Each page gets its own conversation, kept in local storage and auto-deleted
-  24 hours after it starts (optionally cleared when the tab closes).
+  24 hours after it starts (optionally cleared when the tab closes). Clear one
+  chat from the panel, or all of them from Settings.
+- A "Mystic Lamp" interface — indigo-night glass that follows your system
+  light/dark preference, so it sits well over any site.
 
 ## Providers
 
@@ -52,6 +55,10 @@ render Markdown answer ◀──reply─── persist per-page chat ◀──�
 - `src/background/` — message router, AI proxy, chat storage, expiry.
 - `src/contentScript/` — Shadow-DOM chat UI.
 - `src/options/`, `src/popup/` — React settings and status UI.
+- `src/ui/` — single source of truth for the brand marks + line icons, shared by
+  every surface.
+- `scripts/gen-icons.ts` — rasterizes the lamp mark into the extension's PNG
+  icons (`bun run icons`).
 
 ## Develop
 
@@ -62,6 +69,7 @@ bun install
 bun run dev        # Vite dev server with HMR
 bun run build      # type-check + production build into build/
 bun run test       # vitest unit tests
+bun run icons      # regenerate icon PNGs from the lamp SVG
 ```
 
 ### Load the unpacked extension
