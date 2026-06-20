@@ -30,11 +30,6 @@ export default defineManifest({
       js: ['src/contentScript/index.ts'],
     },
   ],
-  web_accessible_resources: [
-    {
-      resources: ['img/logo-16.png', 'img/logo-32.png', 'img/logo-48.png', 'img/logo-128.png'],
-      matches: ['*://*/*'],
-    },
-  ],
-  permissions: ['storage', 'tabs'],
+  permissions: ['storage', 'tabs', 'alarms'],
+  host_permissions: ['https://api.openai.com/*', 'https://api.anthropic.com/*'],
 })

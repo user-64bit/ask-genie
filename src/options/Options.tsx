@@ -1,291 +1,172 @@
-import { useState, useEffect } from 'react'
-import { animate } from '@motionone/dom'
-import { encryptData, decryptData, hashPassword, PasswordHash } from '../utils/encryption'
+import { useEffect, useMemo, useState } from 'react'
+
+import {
+  DEFAULT_SETTINGS,
+  getConfig,
+  getSettings,
+  setConfig,
+  setSettings,
+  type Provider,
+  type Settings,
+} from '../lib/config'
+import { PROVIDERS, defaultModelFor, isKnownModel } from '../lib/providers'
 import './Options.css'
 
-export const Options = () => {
-  const [apiKey, setApiKey] = useState('')
-  const [autoClearChats, setAutoClearChats] = useState(true)
-  const [saved, setSaved] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
-  
-  // Password states
-  const [hasPassword, setHasPassword] = useState(false)
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [passwordError, setPasswordError] = useState('')
+type Status = 'idle' | 'saving' | 'saved'
 
-  // Load saved settings
+export const Options = () => {
+  const [provider, setProvider] = useState<Provider>('openai')
+  const [model, setModel] = useState<string>(defaultModelFor('openai'))
+  const [apiKey, setApiKey] = useState('')
+  const [showKey, setShowKey] = useState(false)
+  const [settings, setSettingsState] = useState<Settings>(DEFAULT_SETTINGS)
+  const [status, setStatus] = useState<Status>('idle')
+  const [loading, setLoading] = useState(true)
+
   useEffect(() => {
-    setIsLoading(true)
-    chrome.storage.local.get(['encryptedApiKey', 'autoClearChats', 'passwordHash'], async (result) => {
-      if (result.encryptedApiKey !== undefined) {
-        try {
-          // Decrypt the API key using wallet-style encryption
-          const decryptedKey = await decryptData(result.encryptedApiKey);
-          setApiKey(decryptedKey);
-        } catch (error) {
-          console.error('Failed to decrypt API key:', error);
-          // Clear the encrypted key if decryption fails
-          setApiKey('');
-        }
+    void (async () => {
+      const [config, savedSettings] = await Promise.all([getConfig(), getSettings()])
+      if (config) {
+        setProvider(config.provider)
+        setModel(config.model)
+        setApiKey(config.apiKey)
       }
-      if (result.autoClearChats !== undefined) {
-        setAutoClearChats(result.autoClearChats)
-      }
-      // Check if password is already set
-      setHasPassword(!!result.passwordHash)
-      setIsLoading(false)
-    })
+      setSettingsState(savedSettings)
+      setLoading(false)
+    })()
   }, [])
 
-  // Validate password
-  const validatePassword = () => {
-    if (!password) {
-      setPasswordError('Password is required');
-      return false;
-    }
-    
-    if (password.length < 8) {
-      setPasswordError('Password must be at least 8 characters');
-      return false;
-    }
-    
-    if (password !== confirmPassword) {
-      setPasswordError('Passwords do not match');
-      return false;
-    }
-    
-    setPasswordError('');
-    return true;
+  const info = PROVIDERS[provider]
+
+  const keyLooksWrong = useMemo(
+    () => apiKey.trim().length > 0 && !apiKey.trim().startsWith(info.apiKeyPrefix),
+    [apiKey, info.apiKeyPrefix],
+  )
+
+  const onProviderChange = (next: Provider) => {
+    setProvider(next)
+    // Keep the model valid for the newly selected provider.
+    setModel((current) => (isKnownModel(next, current) ? current : defaultModelFor(next)))
   }
 
-  // Save settings
-  const saveSettings = async () => {
-    // Validate password if being set for the first time
-    if (!hasPassword && !validatePassword()) {
-      return;
-    }
-    
-    // Show loading state
-    setSaved(false)
-    setIsLoading(true)
-    
-    try {
-      // Setup data to save
-      const dataToSave: any = { autoClearChats };
-      
-      // Hash and save password if provided
-      if (!hasPassword && password) {
-        const passwordHash = await hashPassword(password);
-        dataToSave.passwordHash = passwordHash;
-      }
-      
-      // Encrypt the API key using wallet-style encryption
-      if (apiKey) {
-        const encryptedApiKey = await encryptData(apiKey);
-        dataToSave.encryptedApiKey = encryptedApiKey;
-      }
-      
-      // Save to storage
-      chrome.storage.local.set(dataToSave, () => {
-        setIsLoading(false)
-        setSaved(true)
-        
-        // Update password state
-        if (!hasPassword && password) {
-          setHasPassword(true);
-          setPassword('');
-          setConfirmPassword('');
-        }
-        
-        setTimeout(() => setSaved(false), 2000)
-      })
-    } catch (error) {
-      console.error('Failed to save settings:', error);
-      setIsLoading(false);
-    }
+  const save = async () => {
+    setStatus('saving')
+    await Promise.all([
+      setConfig({ provider, model, apiKey: apiKey.trim() }),
+      setSettings(settings),
+    ])
+    setStatus('saved')
+    setTimeout(() => setStatus('idle'), 2000)
   }
-
-  // Add motion to elements after they mount
-  useEffect(() => {
-    // Animate the main container
-    const container = document.querySelector('.options-container');
-    if (container) {
-      animate(container, 
-        { opacity: [0, 1], y: [20, 0] }, 
-        { duration: 0.5 }
-      );
-    }
-
-    // Animate the heading
-    const heading = document.querySelector('h1');
-    if (heading) {
-      animate(heading, 
-        { opacity: [0, 1] }, 
-        { duration: 0.5, delay: 0.2 }
-      );
-    }
-
-    // Animate the settings groups
-    const settingsGroups = document.querySelectorAll('.settings-group');
-    settingsGroups.forEach((group, index) => {
-      animate(group, 
-        { opacity: [0, 1], x: [-20, 0] }, 
-        { duration: 0.5, delay: 0.3 + (index * 0.1) }
-      );
-    });
-
-    // Animate the save button
-    const saveButton = document.querySelector('.save-button');
-    if (saveButton) {
-      animate(saveButton, 
-        { opacity: [0, 1], y: [20, 0] }, 
-        { duration: 0.5, delay: 0.5 }
-      );
-
-      // Add hover and tap effects
-      saveButton.addEventListener('mouseenter', () => {
-        animate(saveButton, { scale: 1.05 }, { duration: 0.2 });
-      });
-      saveButton.addEventListener('mouseleave', () => {
-        animate(saveButton, { scale: 1 }, { duration: 0.2 });
-      });
-      saveButton.addEventListener('mousedown', () => {
-        animate(saveButton, { scale: 0.95 }, { duration: 0.1 });
-      });
-      saveButton.addEventListener('mouseup', () => {
-        animate(saveButton, { scale: 1.05 }, { duration: 0.1 });
-      });
-    }
-  }, []);
-
-  // Effect for animating saved confirmation message
-  useEffect(() => {
-    if (saved) {
-      const confirmation = document.querySelector('.save-confirmation');
-      if (confirmation) {
-        animate(confirmation, 
-          { opacity: [0, 1], y: [-10, 0] }, 
-          { duration: 0.3 }
-        );
-      }
-    }
-  }, [saved]);
 
   return (
-    <main className="options-container">
-      <h1>Settings</h1>
-      
-      <div className="settings-group">
-        <label htmlFor="api-key">OpenAI API Key</label>
-        <input
-          id="api-key"
-          type="password"
-          value={apiKey}
-          onChange={(e) => setApiKey(e.target.value)}
-          placeholder="Enter your OpenAI API key"
-          style={{
-            backgroundColor: 'white',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-            padding: '8px',
-            width: '100%',
-            color: 'black',
-          }}
-          disabled={isLoading}
-        />
-        <p className="help-text">
-          Your API key is stored securely on your device and never shared.
-          <br />
-          <strong>Note:</strong> Your API key is encrypted before storage.
+    <main className="options">
+      <header className="options-head">
+        <span className="options-logo" aria-hidden="true">
+          🧞
+        </span>
+        <div>
+          <h1>Ask Genie</h1>
+          <p className="options-tagline">AI assistant for any web page</p>
+        </div>
+      </header>
+
+      <section className="card">
+        <h2>AI provider</h2>
+        <p className="hint">
+          Ask Genie uses your own API key. It is stored locally in your browser, sent only to the
+          provider you choose, and never to any Ask Genie server.
         </p>
-      </div>
 
-      {!hasPassword && (
-        <div className="settings-group">
-          <h3>Set Extension Password</h3>
-          <p className="help-text">
-            Create a password to protect access to the extension. You'll need this password
-            to use the extension after setup.
-          </p>
-          
-          <label htmlFor="password">Password</label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Create a password (min. 8 characters)"
-            style={{
-              backgroundColor: 'white',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-              padding: '8px',
-              width: '100%',
-              color: 'black',
-              marginBottom: '8px'
-            }}
-            disabled={isLoading}
-          />
-          
-          <label htmlFor="confirm-password">Confirm Password</label>
-          <input
-            id="confirm-password"
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            placeholder="Confirm your password"
-            style={{
-              backgroundColor: 'white',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-              padding: '8px',
-              width: '100%',
-              color: 'black',
-            }}
-            disabled={isLoading}
-          />
-          
-          {passwordError && (
-            <p className="error-text" style={{ color: 'red', marginTop: '4px' }}>
-              {passwordError}
-            </p>
+        <label className="field">
+          <span>Provider</span>
+          <select
+            value={provider}
+            onChange={(e) => onProviderChange(e.target.value as Provider)}
+            disabled={loading}
+          >
+            {(Object.keys(PROVIDERS) as Provider[]).map((p) => (
+              <option key={p} value={p}>
+                {PROVIDERS[p].label}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="field">
+          <span>Model</span>
+          <select value={model} onChange={(e) => setModel(e.target.value)} disabled={loading}>
+            {info.models.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.label}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="field">
+          <span>API key</span>
+          <div className="key-row">
+            <input
+              type={showKey ? 'text' : 'password'}
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+              placeholder={info.apiKeyHint}
+              spellCheck={false}
+              autoComplete="off"
+              disabled={loading}
+            />
+            <button type="button" className="ghost" onClick={() => setShowKey((s) => !s)}>
+              {showKey ? 'Hide' : 'Show'}
+            </button>
+          </div>
+          {keyLooksWrong && (
+            <span className="warn">
+              That doesn’t look like a {info.label} key (expected “{info.apiKeyPrefix}…”).
+            </span>
           )}
-        </div>
-      )}
-      
-      {hasPassword && (
-        <div className="settings-group">
-          <p className="help-text">
-            <strong>Password protection is enabled.</strong> You'll need your password to access the extension.
-          </p>
-        </div>
-      )}
+          <a className="hint-link" href={info.consoleUrl} target="_blank" rel="noopener noreferrer">
+            Get a {info.label} key →
+          </a>
+        </label>
+      </section>
 
-      <div className="settings-group">
-        <label className="checkbox-label">
+      <section className="card">
+        <h2>Chat &amp; privacy</h2>
+        <label className="check">
           <input
             type="checkbox"
-            checked={autoClearChats}
-            onChange={(e) => setAutoClearChats(e.target.checked)}
-            disabled={isLoading}
+            checked={settings.autoClearChats}
+            onChange={(e) => setSettingsState((s) => ({ ...s, autoClearChats: e.target.checked }))}
+            disabled={loading}
           />
-          Auto-clear chats after 24 hours
+          <span>
+            Auto-delete each chat 24 hours after it starts
+            <small>Keeps stored history small.</small>
+          </span>
         </label>
-      </div>
+        <label className="check">
+          <input
+            type="checkbox"
+            checked={settings.clearOnTabClose}
+            onChange={(e) => setSettingsState((s) => ({ ...s, clearOnTabClose: e.target.checked }))}
+            disabled={loading}
+          />
+          <span>
+            Clear a page’s chat when its tab closes
+            <small>Best-effort, for privacy-conscious browsing.</small>
+          </span>
+        </label>
+      </section>
 
-      <button 
-        className="save-button" 
-        onClick={saveSettings}
-        disabled={isLoading}
-      >
-        {isLoading ? 'Saving...' : 'Save Settings'}
-      </button>
-      
-      {saved && <div className="save-confirmation">Settings saved!</div>}
+      <div className="actions">
+        <button className="primary" onClick={save} disabled={loading || status === 'saving'}>
+          {status === 'saving' ? 'Saving…' : 'Save settings'}
+        </button>
+        {status === 'saved' && <span className="saved-note">Saved ✓</span>}
+      </div>
     </main>
   )
 }
 
-export default Options 
+export default Options

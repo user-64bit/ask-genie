@@ -1,263 +1,119 @@
-@media (prefers-color-scheme: light) {
-  a:hover {
-    color: #61dafb;
-  }
-}
-
-main {
-  text-align: center;
-  padding: 1em;
-  margin: 0 auto;
-}
-
-h3 {
-  color: #61dafb;
-  text-transform: uppercase;
-  font-size: 1.5rem;
-  font-weight: 200;
-  line-height: 1.2rem;
-  margin: 2rem auto;
-}
-
-.calc {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 2rem;
-
-  & > button {
-    font-size: 1rem;
-    padding: 0.5rem 1rem;
-    border: 1px solid #61dafb;
-    border-radius: 0.25rem;
-    background-color: transparent;
-    color: #61dafb;
-    cursor: pointer;
-    outline: none;
-
-    width: 3rem;
-    margin: 0 a;
-  }
-
-  & > label {
-    font-size: 1.5rem;
-    margin: 0 1rem;
-  }
-}
-
-a {
-  font-size: 0.5rem;
-  margin: 0.5rem;
-  color: #cccccc;
-  text-decoration: none;
-}
-
-/* Popup Styles for Ask-Genie */
-
-.popup-container {
-  width: 100%;
-  min-height: 280px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  display: flex;
-  flex-direction: column;
-  padding: 0;
-  margin: 0;
-  color: #4a4a4a;
-  background-color: white;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(108, 92, 231, 0.15);
-  opacity: 0; /* Start invisible for animation */
-}
-
-.popup-header {
-  background-color: #6c5ce7;
-  background-image: linear-gradient(to right, #6c5ce7, #8a7bea);
-  color: white;
-  padding: 20px;
-  text-align: center;
-  opacity: 0; /* Start invisible for animation */
-}
-
-.popup-header h1 {
-  margin: 0;
-  font-size: 24px;
-  font-weight: 700;
-}
-
-.popup-subtitle {
-  font-size: 14px;
-  opacity: 0.9;
-  margin-top: 6px;
-  opacity: 0; /* Start invisible for animation */
-}
-
-.popup-content {
-  padding: 24px;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.status-section {
-  margin-bottom: 20px;
-}
-
-.status-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-  font-size: 14px;
-  background-color: #f8f9fa;
-  padding: 12px 16px;
-  border-radius: 8px;
-  opacity: 0; /* Start invisible for animation */
-}
-
-.status-label {
-  font-weight: 600;
-  color: #4a4a4a;
-}
-
-.status-value {
-  font-weight: 500;
-}
-
-.status-success {
-  color: #27ae60;
-}
-
-.status-error {
-  color: #e74c3c;
-}
-
-.status-info {
-  color: #3498db;
-  max-width: 150px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.popup-buttons {
-  display: flex;
-  gap: 12px;
-}
-
-.popup-button {
-  flex: 1;
-  padding: 12px 16px;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 15px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  opacity: 0; /* Start invisible for animation */
-}
-
-.settings-button {
-  background-color: #6c5ce7;
-  color: white;
-}
-
-.settings-button:hover {
-  background-color: #5d4aeb;
-}
-
-.docs-button {
-  background-color: #f1f3f5;
-  color: #4a4a4a;
-  border: 1px solid #e9ecef;
-}
-
-.docs-button:hover {
-  background-color: #e9ecef;
-}
-
-.popup-footer {
-  padding: 12px;
-  text-align: center;
-  border-top: 1px solid #f1f3f5;
-  opacity: 0; /* Start invisible for animation */
-}
-
-.popup-version {
-  font-size: 12px;
-  color: #999;
-}
-
-/* Add these styles to the existing CSS */
-
-.password-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
+.popup {
+  width: 320px;
   padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
-.password-form h3 {
-  margin-top: 0;
-  margin-bottom: 8px;
-  color: #333;
-}
-
-.password-form p {
-  margin-bottom: 16px;
-  font-size: 14px;
-  text-align: center;
-  color: #666;
-}
-
-.password-input {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 14px;
-  margin-bottom: 16px;
-}
-
-.auth-button {
-  width: 100%;
-  padding: 10px;
-  background-color: #4285f4;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.auth-button:hover {
-  background-color: #3b78e7;
-}
-
-.auth-button:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-}
-
-.auth-error {
-  color: #e53935;
-  font-size: 14px;
-  margin: -10px 0 10px 0;
-  text-align: center;
-}
-
-.loading-indicator {
+.popup-head {
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 32px;
-  font-size: 16px;
-  color: #666;
+  gap: 10px;
 }
 
-/* Animation classes */
-.animate-in {
-  opacity: 0;
+.popup-logo {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.popup-head h1 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.popup-sub {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.popup-loading {
+  color: var(--muted);
+  font-size: 13px;
+  padding: 8px 0;
+}
+
+.status {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+}
+
+.status strong {
+  font-size: 14px;
+}
+
+.status span {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.status.ok {
+  border-left: 3px solid var(--ok);
+}
+
+.status.warn {
+  border-left: 3px solid var(--warn);
+}
+
+.popup-tip {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.bubble-chip {
+  display: inline-block;
+  transform: translateY(1px);
+}
+
+.popup-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.popup button {
+  flex: 1;
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  transition: background 0.15s, border-color 0.15s, transform 0.05s;
+}
+
+.popup button:active {
+  transform: scale(0.98);
+}
+
+.popup .primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.popup .primary:hover {
+  background: var(--accent-700);
+}
+
+.popup .ghost {
+  background: #fff;
+  color: var(--text);
+}
+
+.popup .ghost:hover {
+  border-color: var(--accent);
+}
+
+.popup-foot {
+  text-align: right;
+  font-size: 11px;
+  color: var(--muted);
 }

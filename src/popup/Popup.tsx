@@ -1,213 +1,73 @@
-import { useState, useEffect } from 'react'
-import { animate } from '@motionone/dom'
+import { useEffect, useState } from 'react'
 
+import { sendMessage, type ConfigStatus } from '../lib/messages'
+import { PROVIDERS } from '../lib/providers'
 import './Popup.css'
 
 export const Popup = () => {
-  // App state
-  const [apiKeySet, setApiKeySet] = useState(false)
-  const [activeTab, setActiveTab] = useState<chrome.tabs.Tab | null>(null)
-  
-  // Password authentication states
-  const [passwordRequired, setPasswordRequired] = useState(false)
-  const [password, setPassword] = useState('')
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [authError, setAuthError] = useState('')
-  const [isLoading, setIsLoading] = useState(true)
+  const [status, setStatus] = useState<ConfigStatus | null>(null)
 
-  // Check if password is required on component mount
   useEffect(() => {
-    chrome.runtime.sendMessage({ type: 'CHECK_PASSWORD_REQUIRED' }, (response) => {
-      setPasswordRequired(response.passwordRequired);
-      setIsAuthenticated(!response.passwordRequired);
-      setIsLoading(false);
-      
-      // If password is not required, get API key immediately
-      if (!response.passwordRequired) {
-        checkApiKey();
-      }
-    });
-    
-    // Get the current active tab
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      if (tabs[0]) {
-        setActiveTab(tabs[0])
-      }
-    });
-  }, []);
+    void sendMessage<ConfigStatus>({ type: 'GET_CONFIG_STATUS' }).then(setStatus)
+  }, [])
 
-  // Check if API key is set
-  const checkApiKey = (userPassword?: string) => {
-    // Use the message API to get the decrypted API key from the background script
-    chrome.runtime.sendMessage({ 
-      type: 'GET_API_KEY',
-      password: userPassword || password
-    }, (response) => {
-      if (response.error === 'Authentication required') {
-        setIsAuthenticated(false);
-        return;
-      }
-      
-      setApiKeySet(!!response.apiKey);
-    });
-  };
-  
-  // Handle authentication
-  const handleAuthenticate = () => {
-    setIsLoading(true);
-    setAuthError('');
-    
-    chrome.runtime.sendMessage({ 
-      type: 'VERIFY_PASSWORD', 
-      password
-    }, (response) => {
-      setIsLoading(false);
-      
-      if (response.verified) {
-        setIsAuthenticated(true);
-        checkApiKey(password);
-      } else {
-        setAuthError('Incorrect password');
-      }
-    });
-  };
-  
-  // Handle password input keydown
-  const handlePasswordKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleAuthenticate();
-    }
-  };
+  const openOptions = () => chrome.runtime.openOptionsPage()
+  const openRepo = () => chrome.tabs.create({ url: 'https://github.com/user-64bit/ask-genie' })
 
-  // Open options page
-  const openOptions = () => {
-    chrome.runtime.openOptionsPage()
-  }
-
-  // Open settings
-  const openDocs = () => {
-    chrome.tabs.create({ url: 'https://github.com/user-64bit/ask-genie' })
-  }
-
-  // Add animations after component mounts
-  useEffect(() => {
-    applyAnimations();
-  }, [isAuthenticated]);
-
-  // Apply animations to the UI
-  const applyAnimations = () => {
-    // Animate the main container
-    const container = document.querySelector('.popup-container');
-    if (container) {
-      animate(container, { opacity: [0, 1] }, { duration: 0.4 });
-    }
-
-    // Animate header
-    const header = document.querySelector('.popup-header')
-    if (header) {
-      animate(header, { opacity: [0, 1], y: [-20, 0] }, { duration: 0.5, delay: 0.1 })
-    }
-
-    // Animate other elements with staggered delays
-    const elements = document.querySelectorAll('.animate-in')
-    elements.forEach((element, index) => {
-      animate(element, { opacity: [0, 1], y: [10, 0] }, { duration: 0.4, delay: 0.2 + index * 0.1 })
-    });
-
-    // Animate buttons
-    const buttons = document.querySelectorAll('.popup-button')
-    buttons.forEach((button, index) => {
-      animate(button, { opacity: [0, 1], y: [10, 0] }, { duration: 0.4, delay: 0.5 + index * 0.1 })
-
-      // Add hover and tap effects
-      button.addEventListener('mouseenter', () => {
-        animate(button, { scale: 1.05 }, { duration: 0.2 })
-      })
-      button.addEventListener('mouseleave', () => {
-        animate(button, { scale: 1 }, { duration: 0.2 })
-      })
-      button.addEventListener('mousedown', () => {
-        animate(button, { scale: 0.95 }, { duration: 0.1 })
-      })
-      button.addEventListener('mouseup', () => {
-        animate(button, { scale: 1.05 }, { duration: 0.1 })
-      })
-    })
-
-    // Animate footer
-    const footer = document.querySelector('.popup-footer')
-    if (footer) {
-      animate(footer, { opacity: [0, 1] }, { duration: 0.5, delay: 0.7 })
-    }
-  };
+  const configured = status?.configured ?? false
+  const providerLabel = status?.provider ? PROVIDERS[status.provider].label : null
 
   return (
-    <main className="popup-container">
-      <div className="popup-header">
-        <h1>Ask Genie</h1>
-        <div className="popup-subtitle">AI Assistant for any webpage</div>
-      </div>
+    <main className="popup">
+      <header className="popup-head">
+        <span className="popup-logo" aria-hidden="true">
+          🧞
+        </span>
+        <div>
+          <h1>Ask Genie</h1>
+          <p className="popup-sub">AI for any web page</p>
+        </div>
+      </header>
 
-      {isLoading ? (
-        <div className="popup-content animate-in">
-          <div className="loading-indicator">Loading...</div>
-        </div>
-      ) : passwordRequired && !isAuthenticated ? (
-        <div className="popup-content animate-in">
-          <div className="password-form">
-            <h3>Enter Password</h3>
-            <p>This extension is password protected.</p>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              onKeyDown={handlePasswordKeyDown}
-              placeholder="Enter your password"
-              className="password-input"
-              autoFocus
-            />
-            {authError && <p className="auth-error">{authError}</p>}
-            <button 
-              className="popup-button auth-button" 
-              onClick={handleAuthenticate}
-              disabled={!password}
-            >
-              Unlock
-            </button>
-          </div>
-        </div>
+      {status === null ? (
+        <div className="popup-loading">Loading…</div>
       ) : (
         <>
-          <div className="popup-content">
-            <div className="status-section animate-in">
-              <div className="status-item">
-                <div className="status-label">API Key:</div>
-                <div className={`status-value ${apiKeySet ? 'status-success' : 'status-error'}`}>
-                  {apiKeySet ? 'Set ✓' : 'Not set ✗'}
-                </div>
-              </div>
-              <div className="status-item">
-                {!apiKeySet && (
-                  <p className="status-error">Please set your API key in the settings page.</p>
-                )}
-              </div>
-            </div>
+          <div className={`status ${configured ? 'ok' : 'warn'}`}>
+            {configured ? (
+              <>
+                <strong>Ready</strong>
+                <span>
+                  {providerLabel} · {status.model}
+                </span>
+              </>
+            ) : (
+              <>
+                <strong>API key needed</strong>
+                <span>Add your key in Settings to start.</span>
+              </>
+            )}
+          </div>
 
-            <div className="popup-buttons animate-in">
-              <button className="popup-button settings-button" onClick={openOptions}>
-                Settings
-              </button>
-              <button className="popup-button docs-button" onClick={openDocs}>
-                Documentation
-              </button>
-            </div>
+          {configured && (
+            <p className="popup-tip">
+              Click the <span className="bubble-chip">🧞</span> bubble at the bottom-right of any
+              page to chat about it.
+            </p>
+          )}
+
+          <div className="popup-actions">
+            <button className="primary" onClick={openOptions}>
+              {configured ? 'Settings' : 'Add API key'}
+            </button>
+            <button className="ghost" onClick={openRepo}>
+              About
+            </button>
           </div>
         </>
       )}
 
-      <div className="popup-footer">
-        <div className="popup-version">v0.0.1</div>
-      </div>
+      <footer className="popup-foot">v{chrome.runtime.getManifest().version}</footer>
     </main>
   )
 }
