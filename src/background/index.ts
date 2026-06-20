@@ -7,7 +7,13 @@
 import { CHAT_EXPIRY_MS, getConfig, getSettings, isConfigured, setSettings } from '../lib/config'
 import { pruneExpired, type ChatMap } from '../lib/chats'
 import { buildSystemPrompt, callProvider } from '../lib/providers'
-import type { AskResponse, ChatResponse, ConfigStatus, OkResponse, RuntimeRequest } from '../lib/messages'
+import type {
+  AskResponse,
+  ChatResponse,
+  ConfigStatus,
+  OkResponse,
+  RuntimeRequest,
+} from '../lib/messages'
 
 const CHATS_KEY = 'chats'
 const PRUNE_ALARM = 'ask-genie-prune'

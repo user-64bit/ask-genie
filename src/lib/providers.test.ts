@@ -46,7 +46,13 @@ describe('buildRequest — openai', () => {
 
 describe('parseResponse', () => {
   it('joins anthropic text blocks', () => {
-    const data = { content: [{ type: 'text', text: 'Hello ' }, { type: 'thinking', text: 'x' }, { type: 'text', text: 'world' }] }
+    const data = {
+      content: [
+        { type: 'text', text: 'Hello ' },
+        { type: 'thinking', text: 'x' },
+        { type: 'text', text: 'world' },
+      ],
+    }
     expect(parseResponse('anthropic', data)).toBe('Hello world')
   })
 

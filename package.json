@@ -1,7 +1,7 @@
 {
   "name": "ask-genie",
   "displayName": "Ask Genie",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "author": "user-64bit",
   "description": "A floating AI assistant that allows users to ask questions about the current webpage",
   "type": "module",
@@ -13,7 +13,7 @@
     "create-chrome-ext"
   ],
   "engines": {
-    "node": ">=14.18.0"
+    "node": ">=18"
   },
   "scripts": {
     "dev": "vite",
@@ -24,13 +24,8 @@
     "zip": "npm run build && node src/zip.js"
   },
   "dependencies": {
-    "@motionone/dom": "^10.18.0",
-    "bs58": "^6.0.0",
-    "motion": "^12.6.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "tweetnacl": "^1.0.3",
-    "tweetnacl-util": "^0.15.1"
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.0.0-beta.26",

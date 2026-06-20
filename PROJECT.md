@@ -12,12 +12,12 @@ The extension does not use a centralized backend or shared API infrastructure. U
 
 When reading articles, documentation, research papers, blogs, tutorials, product pages, or any long-form content, users often want to:
 
-* Understand complex concepts
-* Get quick summaries
-* Ask follow-up questions
-* Extract key insights
-* Translate content
-* Simplify technical explanations
+- Understand complex concepts
+- Get quick summaries
+- Ask follow-up questions
+- Extract key insights
+- Translate content
+- Simplify technical explanations
 
 Today this usually requires:
 
@@ -57,10 +57,10 @@ On first launch, Ask-Genie asks the user to provide their own AI API key.
 
 Examples:
 
-* OpenAI
-* Anthropic (future)
-* Gemini (future)
-* Other supported providers
+- OpenAI
+- Anthropic (future)
+- Gemini (future)
+- Other supported providers
 
 The key is stored securely inside the browser.
 
@@ -84,21 +84,21 @@ The extension automatically gathers context from the current page.
 
 This includes:
 
-* Main content
-* Articles
-* Documentation
-* Blog posts
-* Product descriptions
-* Visible text
+- Main content
+- Articles
+- Documentation
+- Blog posts
+- Product descriptions
+- Visible text
 
 The extension attempts to ignore:
 
-* Advertisements
-* Navigation menus
-* Sidebars
-* Headers
-* Footers
-* Cookie banners
+- Advertisements
+- Navigation menus
+- Sidebars
+- Headers
+- Footers
+- Cookie banners
 
 ---
 
@@ -170,10 +170,10 @@ Users provide and control their own API keys.
 
 Benefits:
 
-* Full ownership
-* Transparent costs
-* No subscription required
-* No shared infrastructure
+- Full ownership
+- Transparent costs
+- No subscription required
+- No shared infrastructure
 
 ---
 
@@ -183,10 +183,10 @@ All extension data remains inside the user's browser.
 
 This includes:
 
-* Settings
-* API keys
-* Chat history
-* Preferences
+- Settings
+- API keys
+- Chat history
+- Preferences
 
 Nothing is uploaded elsewhere.
 
@@ -214,9 +214,9 @@ The extension requests only permissions that are necessary.
 
 Examples:
 
-* Active tab access
-* Storage access
-* Content script injection
+- Active tab access
+- Storage access
+- Content script injection
 
 No unnecessary permissions.
 
@@ -277,8 +277,8 @@ Clear Chat On Tab Close
 
 When enabled:
 
-* Closing a tab immediately removes the chat for that page.
-* Nothing remains after the browsing session ends.
+- Closing a tab immediately removes the chat for that page.
+- Nothing remains after the browsing session ends.
 
 This mode is ideal for privacy-conscious users.
 
@@ -288,8 +288,8 @@ This mode is ideal for privacy-conscious users.
 
 Users can:
 
-* Clear current chat
-* Clear all chats
+- Clear current chat
+- Clear all chats
 
 at any time.
 
@@ -301,11 +301,11 @@ The extension should feel more like a modern AI product than a traditional brows
 
 Goals:
 
-* Beautiful interface
-* Smooth animations
-* Fast interactions
-* Minimal distractions
-* Native-feeling experience
+- Beautiful interface
+- Smooth animations
+- Fast interactions
+- Minimal distractions
+- Native-feeling experience
 
 ---
 
@@ -343,11 +343,11 @@ Generate actionable next steps.
 
 Support additional AI providers:
 
-* Anthropic
-* Gemini
-* OpenRouter
-* Groq
-* Local models
+- Anthropic
+- Gemini
+- OpenRouter
+- Groq
+- Local models
 
 ---
 
@@ -355,11 +355,11 @@ Support additional AI providers:
 
 Allow users to choose:
 
-* GPT-4o
-* GPT-4.1
-* Claude
-* Gemini
-* Other supported models
+- GPT-4o
+- GPT-4.1
+- Claude
+- Gemini
+- Other supported models
 
 ---
 
@@ -367,9 +367,9 @@ Allow users to choose:
 
 Export conversations as:
 
-* TXT
-* Markdown
-* PDF
+- TXT
+- Markdown
+- PDF
 
 ---
 
@@ -377,9 +377,9 @@ Export conversations as:
 
 Improve content extraction using:
 
-* Readability algorithms
-* Semantic parsing
-* Structured document understanding
+- Readability algorithms
+- Semantic parsing
+- Structured document understanding
 
 ---
 

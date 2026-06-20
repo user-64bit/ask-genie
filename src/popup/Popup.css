@@ -86,7 +86,10 @@
   font-weight: 600;
   cursor: pointer;
   border: 1px solid var(--border);
-  transition: background 0.15s, border-color 0.15s, transform 0.05s;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    transform 0.05s;
 }
 
 .popup button:active {

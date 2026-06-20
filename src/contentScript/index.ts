@@ -7,7 +7,12 @@ import styles from './styles.css?inline'
 import { extractPageContent } from '../lib/extract'
 import { renderMarkdown } from '../lib/markdown'
 import { makePageKey, type StoredMessage } from '../lib/chats'
-import { sendMessage, type AskResponse, type ChatResponse, type ConfigStatus } from '../lib/messages'
+import {
+  sendMessage,
+  type AskResponse,
+  type ChatResponse,
+  type ConfigStatus,
+} from '../lib/messages'
 
 const ROOT_ID = 'ask-genie-root'
 
@@ -49,7 +54,11 @@ function scrollToBottom(messages: HTMLElement) {
   messages.scrollTop = messages.scrollHeight
 }
 
-function renderMessage(messages: HTMLElement, role: StoredMessage['role'], content: string): HTMLElement {
+function renderMessage(
+  messages: HTMLElement,
+  role: StoredMessage['role'],
+  content: string,
+): HTMLElement {
   const wrap = el('div', { class: `ag-msg ag-${role}` })
   if (role === 'assistant') {
     wrap.appendChild(renderMarkdown(content))
@@ -61,7 +70,11 @@ function renderMessage(messages: HTMLElement, role: StoredMessage['role'], conte
   return wrap
 }
 
-function showNotice(messages: HTMLElement, text: string, action?: { label: string; onClick: () => void }) {
+function showNotice(
+  messages: HTMLElement,
+  text: string,
+  action?: { label: string; onClick: () => void },
+) {
   messages.replaceChildren()
   const notice = el('div', { class: 'ag-notice' }, [el('p', { text })])
   if (action) {
@@ -99,8 +112,16 @@ function build(): El {
 
   const send = el('button', { class: 'ag-send', text: 'Send', attrs: { 'aria-label': 'Send' } })
 
-  const clearBtn = el('button', { class: 'ag-icon', text: '🗑', attrs: { title: 'Clear this chat', 'aria-label': 'Clear chat' } })
-  const closeBtn = el('button', { class: 'ag-icon', text: '✕', attrs: { title: 'Close', 'aria-label': 'Close' } })
+  const clearBtn = el('button', {
+    class: 'ag-icon',
+    text: '🗑',
+    attrs: { title: 'Clear this chat', 'aria-label': 'Clear chat' },
+  })
+  const closeBtn = el('button', {
+    class: 'ag-icon',
+    text: '✕',
+    attrs: { title: 'Close', 'aria-label': 'Close' },
+  })
 
   const header = el('div', { class: 'ag-header' }, [
     el('span', { class: 'ag-title', text: 'Ask Genie' }),
@@ -110,7 +131,13 @@ function build(): El {
   const note = el('div', { class: 'ag-note', text: 'Chats auto-delete 24h after they start.' })
   const inputBar = el('div', { class: 'ag-inputbar' }, [input, send])
 
-  const panel = el('div', { class: 'ag-panel ag-hidden' }, [header, messages, quick, note, inputBar])
+  const panel = el('div', { class: 'ag-panel ag-hidden' }, [
+    header,
+    messages,
+    quick,
+    note,
+    inputBar,
+  ])
 
   shadow.append(bubble, panel)
   ;(document.documentElement || document.body).appendChild(host)
@@ -163,7 +190,10 @@ async function openPanel(refs: El) {
     const { messages } = await sendMessage<ChatResponse>({ type: 'GET_CHAT', pageKey })
     refs.messages.replaceChildren()
     if (messages.length === 0) {
-      const empty = el('div', { class: 'ag-empty', text: 'Ask anything about this page, or pick a quick action below.' })
+      const empty = el('div', {
+        class: 'ag-empty',
+        text: 'Ask anything about this page, or pick a quick action below.',
+      })
       refs.messages.appendChild(empty)
     } else {
       for (const m of messages) renderMessage(refs.messages, m.role, m.content)
@@ -180,7 +210,9 @@ function closePanel(refs: El) {
 function setEnabled(refs: El, enabled: boolean) {
   refs.input.disabled = !enabled
   refs.send.disabled = !enabled || busy
-  refs.quick.querySelectorAll('button').forEach((b) => ((b as HTMLButtonElement).disabled = !enabled || busy))
+  refs.quick
+    .querySelectorAll('button')
+    .forEach((b) => ((b as HTMLButtonElement).disabled = !enabled || busy))
 }
 
 async function clearChat(refs: El) {
