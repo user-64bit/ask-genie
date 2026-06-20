@@ -1,198 +1,322 @@
-/* Ask-Genie Styles */
+/* Ask Genie — injected into a Shadow DOM, so styles are isolated from the host
+   page. :host resets inheritance; all visuals are scoped to ag-* classes. */
 
-/* Chat Bubble */
-.ask-genie-bubble {
+:host {
+  all: initial;
+  --ag-accent: #6c5ce7;
+  --ag-accent-700: #5a4bd4;
+  --ag-text: #1c1c28;
+  --ag-muted: #6b7280;
+  --ag-border: #e6e6f0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.ag-hidden {
+  display: none !important;
+}
+
+/* Bubble */
+.ag-bubble {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  width: 60px;
-  height: 60px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
-  background-color: #6c5ce7;
-  color: white;
+  background: var(--ag-accent);
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 30px;
+  font-size: 28px;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  z-index: 10000;
-  transition: all 0.3s ease;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+  z-index: 2147483647;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.ask-genie-bubble:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+.ag-bubble:hover {
+  transform: scale(1.08);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.28);
 }
 
-/* Chat Container */
-.ask-genie-container {
+/* Panel */
+.ag-panel {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  width: 350px;
-  height: 450px;
-  background-color: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  z-index: 10000;
+  width: 380px;
+  max-width: calc(100vw - 40px);
+  height: 560px;
+  max-height: calc(100vh - 40px);
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  z-index: 2147483647;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  color: var(--ag-text);
 }
 
-/* Header */
-.ask-genie-header {
+.ag-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
-  background-color: #6c5ce7;
-  color: white;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: var(--ag-accent);
+  color: #fff;
 }
 
-.ask-genie-header h3 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 500;
+.ag-title {
+  font-size: 15px;
+  font-weight: 600;
 }
 
-.ask-genie-close {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 24px;
-  cursor: pointer;
-  line-height: 1;
-  padding: 0;
-  margin: 0;
-}
-
-/* Messages area */
-.ask-genie-messages {
-  flex: 1;
-  padding: 16px;
-  overflow-y: auto;
-}
-
-/* Input area */
-.ask-genie-input-area {
+.ag-header-actions {
   display: flex;
-  padding: 12px;
-  border-top: 1px solid #eee;
+  gap: 4px;
 }
 
-.ask-genie-input {
-  flex: 1;
-  padding: 10px 12px;
-  border: 1px solid #ddd;
-  border-radius: 20px;
-  outline: none;
-  font-size: 14px;
-  color: black;
-  background-color: white;
-}
-
-.ask-genie-input:focus {
-  border-color: #6c5ce7;
-}
-
-.ask-genie-send {
-  background-color: #6c5ce7;
-  color: white;
+.ag-icon {
+  background: transparent;
   border: none;
-  border-radius: 20px;
-  padding: 10px 16px;
-  margin-left: 8px;
+  color: #fff;
+  font-size: 15px;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ag-icon:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* Messages */
+.ag-messages {
+  flex: 1;
+  padding: 14px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   font-size: 14px;
-  font-weight: 500;
+  line-height: 1.5;
 }
 
-.ask-genie-send:hover {
-  background-color: #5d4aeb;
+.ag-empty,
+.ag-notice p {
+  color: var(--ag-muted);
+  font-size: 13px;
+  text-align: center;
+  margin: 8px 0;
 }
 
-/* Add authentication UI styles */
-
-.ask-genie-auth {
+.ag-notice {
+  margin: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
-  background-color: white;
-  border-radius: 8px;
-  width: 100%;
+  gap: 10px;
 }
 
-.ask-genie-auth h4 {
-  margin-top: 0;
-  margin-bottom: 8px;
-  color: #333;
-  font-size: 18px;
-}
-
-.ask-genie-auth p {
-  margin-bottom: 16px;
-  font-size: 14px;
-  text-align: center;
-  color: #666;
-}
-
-.ask-genie-password {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 14px;
-  margin-bottom: 16px;
-}
-
-.ask-genie-auth-button {
-  width: 100%;
-  padding: 10px;
-  background-color: #4285f4;
-  color: white;
+.ag-btn-primary {
+  background: var(--ag-accent);
+  color: #fff;
   border: none;
-  border-radius: 4px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.ask-genie-auth-button:hover {
-  background-color: #3b78e7;
-}
-
-.ask-genie-auth-button:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-}
-
-.ask-genie-auth-error {
-  color: #e53935;
-  font-size: 14px;
-  margin: 8px 0;
-  text-align: center;
-}
-
-/* User and AI message styles */
-.ask-genie-message {
-  padding: 10px;
-  margin: 10px;
   border-radius: 8px;
-  max-width: 80%;
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
 }
 
-.user-message {
-  background-color: #e3f2fd;
+.ag-btn-primary:hover {
+  background: var(--ag-accent-700);
+}
+
+.ag-msg {
+  max-width: 86%;
+  padding: 9px 12px;
+  border-radius: 12px;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+}
+
+.ag-user {
   align-self: flex-end;
-  margin-left: auto;
+  background: var(--ag-accent);
+  color: #fff;
+  white-space: pre-wrap;
 }
 
-.ai-message {
-  background-color: #f1f1f1;
+.ag-assistant {
   align-self: flex-start;
-  margin-right: auto;
-} 
+  background: #f1f1f6;
+  color: var(--ag-text);
+}
+
+.ag-error {
+  background: #fdecec;
+  color: #b91c1c;
+}
+
+/* Markdown inside assistant messages */
+.ag-assistant p {
+  margin: 0 0 8px;
+}
+.ag-assistant p:last-child {
+  margin-bottom: 0;
+}
+.ag-assistant h1,
+.ag-assistant h2,
+.ag-assistant h3,
+.ag-assistant h4 {
+  margin: 6px 0;
+  font-size: 14px;
+}
+.ag-assistant ul,
+.ag-assistant ol {
+  margin: 4px 0;
+  padding-left: 20px;
+}
+.ag-assistant li {
+  margin: 2px 0;
+}
+.ag-assistant code {
+  background: rgba(0, 0, 0, 0.07);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12.5px;
+}
+.ag-assistant pre {
+  background: #1e1e2e;
+  color: #eee;
+  padding: 10px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 6px 0;
+}
+.ag-assistant pre code {
+  background: transparent;
+  padding: 0;
+  color: inherit;
+}
+.ag-assistant blockquote {
+  margin: 6px 0;
+  padding-left: 10px;
+  border-left: 3px solid var(--ag-border);
+  color: var(--ag-muted);
+}
+.ag-assistant a {
+  color: var(--ag-accent);
+}
+
+/* Typing indicator */
+.ag-typing {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.ag-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ag-muted);
+  animation: ag-blink 1.2s infinite ease-in-out both;
+}
+.ag-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.ag-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+@keyframes ag-blink {
+  0%,
+  80%,
+  100% {
+    opacity: 0.3;
+  }
+  40% {
+    opacity: 1;
+  }
+}
+
+/* Quick actions */
+.ag-quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 14px 0;
+}
+.ag-chip {
+  border: 1px solid var(--ag-border);
+  background: #fff;
+  color: var(--ag-text);
+  border-radius: 999px;
+  padding: 5px 11px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.ag-chip:hover:not(:disabled) {
+  border-color: var(--ag-accent);
+  color: var(--ag-accent);
+}
+.ag-chip:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.ag-note {
+  font-size: 11px;
+  color: var(--ag-muted);
+  padding: 8px 14px 0;
+}
+
+/* Input */
+.ag-inputbar {
+  display: flex;
+  gap: 8px;
+  padding: 12px 14px;
+  align-items: flex-end;
+}
+.ag-input {
+  flex: 1;
+  resize: none;
+  border: 1px solid var(--ag-border);
+  border-radius: 10px;
+  padding: 9px 12px;
+  font: inherit;
+  font-size: 14px;
+  color: var(--ag-text);
+  background: #fff;
+  outline: none;
+  max-height: 120px;
+}
+.ag-input:focus {
+  border-color: var(--ag-accent);
+}
+.ag-send {
+  background: var(--ag-accent);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 0 16px;
+  height: 38px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.ag-send:hover:not(:disabled) {
+  background: var(--ag-accent-700);
+}
+.ag-send:disabled,
+.ag-input:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
