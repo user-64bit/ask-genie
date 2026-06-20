@@ -196,27 +196,33 @@ Nothing is uploaded elsewhere.
 
 ## API Key Storage
 
-API keys are never stored in plain text.
+The key is stored in `chrome.storage.local`, which is sandboxed per extension
+and not readable by web pages or other extensions.
 
-Ask-Genie uses a wallet-inspired approach:
+Just as important is where the key is *not*:
 
-1. Encrypt key
-2. Store encrypted value in IndexedDB
-3. Decrypt only when making requests
+1. It is held only by the background service worker.
+2. It never enters the content script or any web page.
+3. It is sent only to the provider's official API endpoint, never to any
+   Ask-Genie server (there isn't one).
 
-This minimizes exposure and follows secure storage practices for browser environments.
+We deliberately do not claim at-rest encryption of the key. In an MV3 extension,
+deriving an encryption key from public values (extension id, user agent) would
+be security theater, and a real passphrase would have to be re-entered every
+time the service worker restarts. Honest local storage with a tight key-handling
+boundary is the better tradeoff. (See `src/lib/config.ts`.)
 
 ---
 
 ## Principle of Least Privilege
 
-The extension requests only permissions that are necessary.
+The extension requests only the permissions it needs:
 
-Examples:
-
-- Active tab access
-- Storage access
-- Content script injection
+- `storage` — settings, API key, and chat history
+- `tabs` — current tab info for the popup; clearing a chat when its tab closes
+- `alarms` — periodic cleanup of expired chats
+- `host_permissions` scoped to the two provider API hosts only (no `<all_urls>`)
+- Content script injection for the on-page chat bubble
 
 No unnecessary permissions.
 
