@@ -6,14 +6,31 @@
 
 import { CHAT_EXPIRY_MS, getConfig, getSettings, isConfigured, setSettings } from '../lib/config'
 import { pruneExpired, type ChatMap } from '../lib/chats'
-import { buildSystemPrompt, callProvider } from '../lib/providers'
+import { buildSystemPrompt, callProvider, type PromptContext } from '../lib/providers'
 import type {
+  AddContextResponse,
   AskResponse,
   ChatResponse,
   ConfigStatus,
+  ContextsResponse,
   OkResponse,
   RuntimeRequest,
 } from '../lib/messages'
+import { truncate } from '../lib/extract'
+import {
+  putContext,
+  listByPage,
+  getMany,
+  deleteContext,
+  clearPageUnpinned,
+} from '../lib/contextStore'
+import {
+  createContext,
+  findDuplicate,
+  nextOrder,
+  reorder,
+  buildContextBlock,
+} from '../lib/contexts'
 
 const CHATS_KEY = 'chats'
 const PRUNE_ALARM = 'ask-genie-prune'
@@ -88,8 +105,15 @@ async function handleAsk(req: Extract<RuntimeRequest, { type: 'ASK' }>): Promise
 
   chat.messages.push({ role: 'user', content: req.question })
 
+  // Selected contexts outrank page content; shrink the page when they exist.
+  const selectedRaw = await getMany(req.contextIds ?? [])
+  const selected: PromptContext[] = buildContextBlock(
+    selectedRaw.map((c) => ({ label: c.label, type: c.type, text: c.text })),
+  )
+  const pageContext = selected.length > 0 ? truncate(req.context, 3000) : req.context
+
   try {
-    const system = buildSystemPrompt(req.title, req.url, req.context)
+    const system = buildSystemPrompt(req.title, req.url, pageContext, selected)
     const reply = await callProvider(config, system, chat.messages)
     chat.messages.push({ role: 'assistant', content: reply })
     chat.updatedAt = Date.now()
@@ -97,7 +121,6 @@ async function handleAsk(req: Extract<RuntimeRequest, { type: 'ASK' }>): Promise
     await setChats(chats)
     return { ok: true, reply }
   } catch (error) {
-    // Failed turn is not persisted, so the user can simply retry.
     return { ok: false, error: error instanceof Error ? error.message : 'Something went wrong.' }
   }
 }
@@ -141,6 +164,45 @@ async function handle(req: RuntimeRequest, sender: chrome.runtime.MessageSender)
 
     case 'CLEAR_ALL': {
       await setChats({})
+      return { ok: true } satisfies OkResponse
+    }
+
+    case 'ADD_CONTEXT': {
+      const list = await listByPage(req.pageKey)
+      const dup = findDuplicate(list, req.context.anchor)
+      if (dup) {
+        return { ok: true, context: dup } satisfies AddContextResponse
+      }
+      const context = createContext(req.context, {
+        pageKey: req.pageKey,
+        url: req.url,
+        title: req.title,
+        order: nextOrder(list),
+        now: Date.now(),
+      })
+      await putContext(context)
+      return { ok: true, context } satisfies AddContextResponse
+    }
+
+    case 'LIST_CONTEXTS': {
+      const contexts = await listByPage(req.pageKey)
+      return { contexts } satisfies ContextsResponse
+    }
+
+    case 'REMOVE_CONTEXT': {
+      await deleteContext(req.id)
+      return { ok: true } satisfies OkResponse
+    }
+
+    case 'REORDER_CONTEXTS': {
+      const list = await listByPage(req.pageKey)
+      const reordered = reorder(list, req.orderedIds)
+      for (const c of reordered) await putContext(c)
+      return { ok: true } satisfies OkResponse
+    }
+
+    case 'CLEAR_CONTEXTS': {
+      await clearPageUnpinned(req.pageKey)
       return { ok: true } satisfies OkResponse
     }
 
