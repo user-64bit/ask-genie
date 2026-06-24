@@ -793,6 +793,23 @@
 .ag-pill-lost { opacity: 0.6; border-style: dashed; }
 .ag-pill-lost .ag-pill-ic { color: var(--ag-muted); }
 
+/* ── Pill grip + drag ────────────────────────────────────────────────────── */
+.ag-pill-grip { flex: none; display: inline-flex; width: 16px; height: 18px; align-items: center; justify-content: center; border: none; background: transparent; color: var(--ag-muted); cursor: grab; padding: 0; }
+.ag-pill-grip:hover { color: var(--ag-text); }
+.ag-pill-dragging { opacity: 0.5; }
+
+/* ── Expand sheet ────────────────────────────────────────────────────────── */
+.ag-sheet-backdrop { position: absolute; inset: 0; z-index: 5; display: flex; align-items: center; justify-content: center; background: rgba(8, 10, 24, 0.55); backdrop-filter: blur(3px); }
+.ag-sheet { width: 90%; max-height: 80%; display: flex; flex-direction: column; gap: 10px; padding: 14px; border-radius: 16px; background: var(--ag-raise); border: 1px solid var(--ag-line); box-shadow: var(--ag-shadow); }
+.ag-sheet-head { display: flex; align-items: center; gap: 8px; font-weight: 700; }
+.ag-sheet-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ag-sheet-body { margin: 0; padding: 10px; max-height: 260px; overflow: auto; background: var(--ag-code-bg); color: #e7e9f6; border-radius: 10px; font-size: 12.5px; white-space: pre-wrap; word-break: break-word; }
+.ag-sheet-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.ag-sheet-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--ag-line); background: var(--ag-field-bg); color: var(--ag-text); font: inherit; font-size: 13px; cursor: pointer; }
+.ag-sheet-btn:hover { border-color: var(--ag-violet); }
+.ag-sheet-btn .ag-ic { width: 15px; height: 15px; }
+.ag-sheet-danger { color: var(--ag-danger); }
+
 /* ── Context Tray ────────────────────────────────────────────────────────── */
 .ag-tray {
   position: fixed;

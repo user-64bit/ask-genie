@@ -28,6 +28,54 @@ export function iconForType(type: ContextType): IconName {
   }
 }
 
+export function openExpandSheet(
+  shadow: ShadowRoot,
+  c: SelectionContext,
+  handlers: {
+    onLock: (locked: boolean) => void
+    onSave: (saved: boolean) => void
+    onRemove: () => void
+  },
+): void {
+  shadow.querySelector('.ag-sheet-backdrop')?.remove()
+  const close = () => backdrop.remove()
+
+  const lockBtn = el('button', { class: 'ag-sheet-btn' })
+  lockBtn.append(iconSpan(c.locked ? 'lock' : 'unlock', 'ag-ic'), el('span', { text: c.locked ? 'Locked' : 'Lock' }))
+  lockBtn.addEventListener('click', () => {
+    handlers.onLock(!c.locked)
+    close()
+  })
+
+  const saveBtn = el('button', { class: 'ag-sheet-btn' })
+  saveBtn.append(iconSpan('bookmark', 'ag-ic'), el('span', { text: c.saved ? 'Saved' : 'Save for later' }))
+  saveBtn.addEventListener('click', () => {
+    handlers.onSave(!c.saved)
+    close()
+  })
+
+  const rmBtn = el('button', { class: 'ag-sheet-btn ag-sheet-danger' })
+  rmBtn.append(iconSpan('trash', 'ag-ic'), el('span', { text: 'Remove' }))
+  rmBtn.addEventListener('click', () => {
+    handlers.onRemove()
+    close()
+  })
+
+  const sheet = el('div', { class: 'ag-sheet', attrs: { role: 'dialog', 'aria-label': c.label } }, [
+    el('div', { class: 'ag-sheet-head' }, [
+      iconSpan(iconForType(c.type), 'ag-pill-ic'),
+      el('span', { class: 'ag-sheet-title', text: c.label }),
+    ]),
+    el('pre', { class: 'ag-sheet-body', text: c.text }),
+    el('div', { class: 'ag-sheet-actions' }, [lockBtn, saveBtn, rmBtn]),
+  ])
+  const backdrop = el('div', { class: 'ag-sheet-backdrop' }, [sheet])
+  backdrop.addEventListener('click', (e) => {
+    if (e.target === backdrop) close()
+  })
+  shadow.appendChild(backdrop)
+}
+
 export function renderPills(
   container: HTMLElement,
   contexts: SelectionContext[],
@@ -36,6 +84,8 @@ export function renderPills(
     onClick: (c: SelectionContext) => void
     onHover?: (id: string) => void
     onHoverEnd?: (id: string) => void
+    onReorder?: (draggedId: string, targetId: string) => void
+    onExpand?: (c: SelectionContext) => void
   },
 ): void {
   container.replaceChildren()
@@ -59,6 +109,27 @@ export function renderPills(
     pill.addEventListener('mouseenter', () => handlers.onHover?.(c.id))
     pill.addEventListener('mouseleave', () => handlers.onHoverEnd?.(c.id))
     pill.appendChild(rm)
+
+    pill.setAttribute('draggable', 'true')
+    pill.addEventListener('dragstart', (e) => {
+      e.dataTransfer?.setData('text/plain', c.id)
+      pill.classList.add('ag-pill-dragging')
+    })
+    pill.addEventListener('dragend', () => pill.classList.remove('ag-pill-dragging'))
+    pill.addEventListener('dragover', (e) => e.preventDefault())
+    pill.addEventListener('drop', (e) => {
+      e.preventDefault()
+      const dragged = e.dataTransfer?.getData('text/plain')
+      if (dragged && dragged !== c.id) handlers.onReorder?.(dragged, c.id)
+    })
+    const grip = el('button', { class: 'ag-pill-grip', attrs: { 'aria-label': `Open ${c.label}` } })
+    grip.appendChild(iconSpan('grip', 'ag-pill-x-ic'))
+    grip.addEventListener('click', (e) => {
+      e.stopPropagation()
+      handlers.onExpand?.(c)
+    })
+    pill.insertBefore(grip, pill.firstChild)
+
     container.appendChild(pill)
   }
 }

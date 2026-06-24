@@ -16,7 +16,7 @@ import {
   type ContextsResponse,
 } from '../lib/messages'
 import { initSelectionToolbar } from './selection'
-import { renderPills, renderTray, HighlightController } from './contexts-ui'
+import { renderPills, renderTray, HighlightController, openExpandSheet } from './contexts-ui'
 
 const ROOT_ID = 'ask-genie-root'
 
@@ -401,6 +401,31 @@ async function refreshContexts(): Promise<void> {
     onClick: (c) => highlighter.flash(c.id),
     onHover: (id) => highlighter.emphasize(id, true),
     onHoverEnd: (id) => highlighter.emphasize(id, false),
+    onExpand: (c) =>
+      openExpandSheet(elements.panel.getRootNode() as ShadowRoot, c, {
+        onLock: async (locked) => {
+          await sendMessage({ type: 'LOCK_CONTEXT', id: c.id, locked })
+          void refreshContexts()
+        },
+        onSave: async (saved) => {
+          await sendMessage({ type: 'SAVE_CONTEXT', id: c.id, saved })
+          void refreshContexts()
+        },
+        onRemove: async () => {
+          highlighter.clear(c.id)
+          await sendMessage({ type: 'REMOVE_CONTEXT', id: c.id })
+          void refreshContexts()
+        },
+      }),
+    onReorder: async (draggedId, targetId) => {
+      const ids = activeContextIds.slice()
+      const from = ids.indexOf(draggedId)
+      const to = ids.indexOf(targetId)
+      if (from === -1 || to === -1) return
+      ids.splice(to, 0, ids.splice(from, 1)[0])
+      await sendMessage({ type: 'REORDER_CONTEXTS', pageKey, orderedIds: ids })
+      void refreshContexts()
+    },
   })
   // Mark pills whose source can't be found on the current page.
   for (const id of lost) {
