@@ -66,6 +66,9 @@ let busy = false
 let pageKey = makePageKey(location.href)
 let activeContextIds: string[] = []
 const highlighter = new HighlightController()
+let mo: MutationObserver | null = null
+let reanchorTimer = 0
+const MO_OPTS: MutationObserverInit = { childList: true, subtree: true, characterData: true }
 
 export function el<K extends keyof HTMLElementTagNameMap>(
   tag: K,
@@ -385,7 +388,9 @@ async function submit(rawText: string) {
 async function refreshContexts(): Promise<void> {
   const { contexts } = await sendMessage<ContextsResponse>({ type: 'LIST_CONTEXTS', pageKey })
   activeContextIds = contexts.map((c) => c.id)
+  mo?.disconnect()
   const anchored = highlighter.sync(contexts)
+  mo?.observe(document.body, MO_OPTS)
   const lost = new Set(anchored.filter((a) => !a.found).map((a) => a.id))
   renderPills(elements.pills, contexts, {
     onRemove: async (id) => {
@@ -436,12 +441,12 @@ function init() {
   window.setTimeout(() => void refreshContexts(), 600)
   window.addEventListener('load', () => void refreshContexts(), { once: true })
 
-  let reanchorTimer = 0
-  const mo = new MutationObserver(() => {
+  mo = new MutationObserver(() => {
+    if (activeContextIds.length === 0) return // nothing to re-anchor; don't walk the DOM
     window.clearTimeout(reanchorTimer)
     reanchorTimer = window.setTimeout(() => void refreshContexts(), 500)
   })
-  mo.observe(document.body, { childList: true, subtree: true, characterData: true })
+  mo.observe(document.body, MO_OPTS)
 }
 
 function onUrlChange() {
@@ -449,7 +454,9 @@ function onUrlChange() {
   if (next === pageKey) return
   pageKey = next
   chatLoaded = false
+  mo?.disconnect()
   highlighter.clear()
+  mo?.observe(document.body, MO_OPTS)
   void sendMessage({ type: 'REGISTER_PAGE', pageKey })
   void refreshContexts()
 }
