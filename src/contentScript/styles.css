@@ -750,3 +750,79 @@
 @media (prefers-reduced-motion: reduce) {
   .ag-toolbar { transition: none; }
 }
+
+/* ── Context pills ───────────────────────────────────────────────────────── */
+.ag-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-height: 84px;
+  overflow-y: auto;
+}
+.ag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 220px;
+  padding: 5px 6px 5px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--ag-chip-border);
+  background: var(--ag-chip-bg);
+  font-size: 12px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.ag-pill:hover { border-color: var(--ag-violet); background: rgba(124, 92, 255, 0.12); }
+.ag-pill-ic { width: 13px; height: 13px; color: var(--ag-violet-2); flex: none; }
+.ag-pill-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ag-pill-x {
+  flex: none;
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ag-muted);
+  cursor: pointer;
+}
+.ag-pill-x:hover { background: var(--ag-danger-bg); color: var(--ag-danger); }
+.ag-pill-x-ic { width: 11px; height: 11px; }
+
+/* ── Context Tray ────────────────────────────────────────────────────────── */
+.ag-tray {
+  position: fixed;
+  right: 20px;
+  bottom: 88px;
+  z-index: 2147483647;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 13px;
+  border-radius: 999px;
+  background: var(--ag-coin);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 10px 26px -8px rgba(91, 52, 224, 0.6);
+}
+.ag-tray-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ag-gold);
+  box-shadow: 0 0 8px rgba(255, 198, 97, 0.7);
+}
+.ag-tray-count { font-weight: 800; }
+.ag-tray-bump { animation: ag-bump 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+@keyframes ag-bump {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.14); }
+  100% { transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ag-tray-bump { animation: none; }
+}

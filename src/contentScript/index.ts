@@ -16,6 +16,8 @@ import {
   type ContextsResponse,
 } from '../lib/messages'
 import { initSelectionToolbar } from './selection'
+import { renderPills, renderTray } from './contexts-ui'
+import type { SelectionContext } from '../lib/contexts'
 
 const ROOT_ID = 'ask-genie-root'
 
@@ -54,6 +56,7 @@ interface El {
   panel: HTMLDivElement
   messages: HTMLDivElement
   quick: HTMLDivElement
+  pills: HTMLDivElement
   input: HTMLTextAreaElement
   send: HTMLButtonElement
 }
@@ -217,14 +220,15 @@ function build(): El {
     }),
   ])
   const inputBar = el('div', { class: 'ag-inputbar' }, [input, send])
-  const composer = el('div', { class: 'ag-composer' }, [quick, inputBar, note])
+  const pills = el('div', { class: 'ag-pills ag-hidden', attrs: { role: 'list', 'aria-label': 'Selected contexts' } })
+  const composer = el('div', { class: 'ag-composer' }, [pills, quick, inputBar, note])
 
   const panel = el('div', { class: 'ag-panel ag-hidden' }, [header, messages, composer])
 
   shadow.append(bubble, panel)
   ;(document.documentElement || document.body).appendChild(host)
 
-  const refs: El = { bubble, panel, messages, quick, input, send }
+  const refs: El = { bubble, panel, messages, quick, pills, input, send }
 
   bubble.addEventListener('click', () => openPanel(refs))
   bubble.addEventListener('keydown', (e) => {
@@ -287,6 +291,7 @@ async function openPanel(refs: El) {
       for (const m of messages) renderMessage(refs.messages, m.role, m.content)
     }
   }
+  void refreshContexts()
   refs.input.focus()
 }
 
@@ -380,6 +385,17 @@ async function submit(rawText: string) {
 async function refreshContexts(): Promise<void> {
   const { contexts } = await sendMessage<ContextsResponse>({ type: 'LIST_CONTEXTS', pageKey })
   activeContextIds = contexts.map((c) => c.id)
+  renderPills(elements.pills, contexts, {
+    onRemove: async (id) => {
+      await sendMessage({ type: 'REMOVE_CONTEXT', id })
+      void refreshContexts()
+    },
+    onClick: (_c: SelectionContext) => {
+      // Phase 2 wires scroll-to-source; for now just open the panel.
+      openPanel(elements)
+    },
+  })
+  renderTray(elements.panel.getRootNode() as ShadowRoot, contexts.length, () => openPanel(elements))
 }
 
 function init() {
@@ -393,6 +409,7 @@ function init() {
     onAsk: () => openPanel(elements),
   })
   void sendMessage({ type: 'REGISTER_PAGE', pageKey })
+  void refreshContexts()
 }
 
 if (document.readyState === 'loading') {
