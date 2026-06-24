@@ -13,7 +13,9 @@ import {
   type AskResponse,
   type ChatResponse,
   type ConfigStatus,
+  type ContextsResponse,
 } from '../lib/messages'
+import { initSelectionToolbar } from './selection'
 
 const ROOT_ID = 'ask-genie-root'
 
@@ -60,8 +62,9 @@ let chatLoaded = false
 let configured = false
 let busy = false
 const pageKey = makePageKey(location.href)
+let activeContextIds: string[] = []
 
-function el<K extends keyof HTMLElementTagNameMap>(
+export function el<K extends keyof HTMLElementTagNameMap>(
   tag: K,
   opts: { class?: string; text?: string; attrs?: Record<string, string> } = {},
   children: Node[] = [],
@@ -75,13 +78,13 @@ function el<K extends keyof HTMLElementTagNameMap>(
 }
 
 /** Build an element from one of our trusted, author-controlled SVG strings. */
-function svgFrom(raw: string): SVGElement {
+export function svgFrom(raw: string): SVGElement {
   const tpl = document.createElement('template')
   tpl.innerHTML = raw.trim()
   return tpl.content.firstElementChild as SVGElement
 }
 
-function iconSpan(name: IconName, cls = 'ag-ic'): HTMLSpanElement {
+export function iconSpan(name: IconName, cls = 'ag-ic'): HTMLSpanElement {
   const span = el('span', { class: cls })
   span.appendChild(svgFrom(icon(name)))
   return span
@@ -358,6 +361,7 @@ async function submit(rawText: string) {
     title: document.title,
     question: text,
     context,
+    contextIds: activeContextIds,
   })
 
   typing.remove()
@@ -373,9 +377,21 @@ async function submit(rawText: string) {
   refs.input.focus()
 }
 
+async function refreshContexts(): Promise<void> {
+  const { contexts } = await sendMessage<ContextsResponse>({ type: 'LIST_CONTEXTS', pageKey })
+  activeContextIds = contexts.map((c) => c.id)
+}
+
 function init() {
   if (document.getElementById(ROOT_ID)) return // idempotent: never inject twice
   elements = build()
+  initSelectionToolbar(elements.panel.getRootNode() as ShadowRoot, {
+    pageKey,
+    url: location.href,
+    title: document.title,
+    onAdded: () => void refreshContexts(),
+    onAsk: () => openPanel(elements),
+  })
   void sendMessage({ type: 'REGISTER_PAGE', pageKey })
 }
 

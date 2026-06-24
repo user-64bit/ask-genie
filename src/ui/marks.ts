@@ -108,6 +108,14 @@ const PATHS: Record<string, string> = {
     '<path d="M10 6h10M10 12h10M10 18h10"/><path d="M3.5 6l1.2 1.2L7 5M3.5 12l1.2 1.2L7 11M3.5 18l1.2 1.2L7 17"/>',
   translate:
     '<path d="M4 6h9M8.5 4v2c0 4-2.2 7.2-5 8.6M6 10.5c.6 2 2.3 3.6 4.5 4.4M13 20l3.5-8 3.5 8M14.2 17h4.6"/>',
+  code: '<path d="M9 7l-5 5 5 5M15 7l5 5-5 5"/>',
+  table: '<path d="M3 5h18v14H3zM3 10h18M9 5v14"/>',
+  alert: '<path d="M12 4l9 16H3zM12 10v4M12 17h.01"/>',
+  lock: '<path d="M6 11h12v9H6zM8 11V8a4 4 0 0 1 8 0v3"/>',
+  unlock: '<path d="M6 11h12v9H6zM8 11V8a4 4 0 0 1 7.5-2"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  grip: '<path d="M9 6h.01M9 12h.01M9 18h.01M15 6h.01M15 12h.01M15 18h.01"/>',
+  bookmark: '<path d="M6 4h12v16l-6-4-6 4z"/>',
 }
 
 /** Returns a 24×24 line-icon SVG string that inherits the current text colour. */
