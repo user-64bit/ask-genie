@@ -16,7 +16,7 @@ import {
   type ContextsResponse,
 } from '../lib/messages'
 import { initSelectionToolbar } from './selection'
-import { renderPills, renderTray } from './contexts-ui'
+import { renderPills, renderTray, HighlightController } from './contexts-ui'
 import type { SelectionContext } from '../lib/contexts'
 
 const ROOT_ID = 'ask-genie-root'
@@ -66,6 +66,7 @@ let configured = false
 let busy = false
 const pageKey = makePageKey(location.href)
 let activeContextIds: string[] = []
+const highlighter = new HighlightController()
 
 export function el<K extends keyof HTMLElementTagNameMap>(
   tag: K,
@@ -385,16 +386,22 @@ async function submit(rawText: string) {
 async function refreshContexts(): Promise<void> {
   const { contexts } = await sendMessage<ContextsResponse>({ type: 'LIST_CONTEXTS', pageKey })
   activeContextIds = contexts.map((c) => c.id)
+  const anchored = highlighter.sync(contexts)
+  const lost = new Set(anchored.filter((a) => !a.found).map((a) => a.id))
   renderPills(elements.pills, contexts, {
     onRemove: async (id) => {
+      highlighter.clear(id)
       await sendMessage({ type: 'REMOVE_CONTEXT', id })
       void refreshContexts()
     },
-    onClick: (_c: SelectionContext) => {
-      // Phase 2 wires scroll-to-source; for now just open the panel.
-      openPanel(elements)
-    },
+    onClick: (c) => highlighter.flash(c.id),
+    onHover: (id) => highlighter.emphasize(id, true),
+    onHoverEnd: (id) => highlighter.emphasize(id, false),
   })
+  // Mark pills whose source can't be found on the current page.
+  for (const id of lost) {
+    elements.pills.querySelector(`[data-ctx-id="${id}"]`)?.classList.add('ag-pill-lost')
+  }
   renderTray(elements.panel.getRootNode() as ShadowRoot, contexts.length, () => openPanel(elements))
 }
 
@@ -406,6 +413,7 @@ function injectPageStyles() {
   tag.textContent = `
     mark.ag-ctx-hl{background:rgba(255,198,97,.22);border-bottom:2px solid rgba(255,198,97,.7);color:inherit;border-radius:2px;padding:0 1px;transition:background .2s}
     mark.ag-ctx-hl:hover{background:rgba(255,198,97,.34)}
+    mark.ag-ctx-emph{background:rgba(255,198,97,.4)}
     mark.ag-ctx-flash{animation:ag-ctx-sweep 1s ease}
     @keyframes ag-ctx-sweep{0%{background:rgba(255,198,97,.55)}100%{background:rgba(255,198,97,.22)}}
     @media (prefers-reduced-motion:reduce){mark.ag-ctx-flash{animation:none}}

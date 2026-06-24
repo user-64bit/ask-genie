@@ -31,7 +31,12 @@ export function iconForType(type: ContextType): IconName {
 export function renderPills(
   container: HTMLElement,
   contexts: SelectionContext[],
-  handlers: { onRemove: (id: string) => void; onClick: (c: SelectionContext) => void },
+  handlers: {
+    onRemove: (id: string) => void
+    onClick: (c: SelectionContext) => void
+    onHover?: (id: string) => void
+    onHoverEnd?: (id: string) => void
+  },
 ): void {
   container.replaceChildren()
   container.classList.toggle('ag-hidden', contexts.length === 0)
@@ -51,6 +56,8 @@ export function renderPills(
       handlers.onRemove(c.id)
     })
     pill.addEventListener('click', () => handlers.onClick(c))
+    pill.addEventListener('mouseenter', () => handlers.onHover?.(c.id))
+    pill.addEventListener('mouseleave', () => handlers.onHoverEnd?.(c.id))
     pill.appendChild(rm)
     container.appendChild(pill)
   }
@@ -192,5 +199,11 @@ export class HighlightController {
       void m.offsetWidth
       m.classList.add('ag-ctx-flash')
     })
+  }
+
+  emphasize(id: string, on: boolean): void {
+    document
+      .querySelectorAll<HTMLElement>(`mark.ag-ctx-hl[${HL_ATTR}="${id}"]`)
+      .forEach((m) => m.classList.toggle('ag-ctx-emph', on))
   }
 }

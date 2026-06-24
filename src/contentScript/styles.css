@@ -790,6 +790,8 @@
 }
 .ag-pill-x:hover { background: var(--ag-danger-bg); color: var(--ag-danger); }
 .ag-pill-x-ic { width: 11px; height: 11px; }
+.ag-pill-lost { opacity: 0.6; border-style: dashed; }
+.ag-pill-lost .ag-pill-ic { color: var(--ag-muted); }
 
 /* ── Context Tray ────────────────────────────────────────────────────────── */
 .ag-tray {
