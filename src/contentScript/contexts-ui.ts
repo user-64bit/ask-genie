@@ -95,6 +95,28 @@ export class HighlightController {
   private mark(range: Range, id: string): boolean {
     try {
       const marks: HTMLElement[] = []
+
+      // Fast path: selection entirely within one text node (the common case).
+      // A TreeWalker never visits its own root, so the walker below would yield
+      // nothing when commonAncestorContainer is itself a Text node.
+      if (range.commonAncestorContainer.nodeType === Node.TEXT_NODE) {
+        const r = document.createRange()
+        r.setStart(range.startContainer, range.startOffset)
+        r.setEnd(range.endContainer, range.endOffset)
+        if (!r.collapsed) {
+          const mark = document.createElement('mark')
+          mark.setAttribute(HL_ATTR, id)
+          mark.className = 'ag-ctx-hl'
+          try {
+            r.surroundContents(mark)
+            marks.push(mark)
+          } catch {
+            /* partial overlap; skip */
+          }
+        }
+        return marks.length > 0
+      }
+
       // Wrap per intersecting text node to survive multi-element ranges.
       const walker = document.createTreeWalker(
         range.commonAncestorContainer,
