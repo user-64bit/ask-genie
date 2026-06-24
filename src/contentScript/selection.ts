@@ -7,9 +7,7 @@ import { labelSelection } from '../lib/labeler'
 import { sendMessage, type AddContextResponse } from '../lib/messages'
 
 interface ToolbarOpts {
-  pageKey: string
-  url: string
-  title: string
+  getPageKey: () => string
   onAdded: () => void
   onAsk: () => void
 }
@@ -33,9 +31,9 @@ export function initSelectionToolbar(shadow: ShadowRoot, opts: ToolbarOpts): voi
     const { type, label } = labelSelection(selectionLabelInput(sel))
     const res = await sendMessage<AddContextResponse>({
       type: 'ADD_CONTEXT',
-      pageKey: opts.pageKey,
-      url: opts.url,
-      title: opts.title,
+      pageKey: opts.getPageKey(),
+      url: location.href,
+      title: document.title,
       context: { type, label, text: anchor.exact, anchor },
     })
     return res.ok

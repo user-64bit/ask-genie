@@ -496,13 +496,11 @@ function injectPageStyles() {
 }
 
 function init() {
-  injectPageStyles()
   if (document.getElementById(ROOT_ID)) return // idempotent: never inject twice
+  injectPageStyles()
   elements = build()
   initSelectionToolbar(elements.panel.getRootNode() as ShadowRoot, {
-    pageKey,
-    url: location.href,
-    title: document.title,
+    getPageKey: () => pageKey,
     onAdded: () => void refreshContexts(),
     onAsk: () => openPanel(elements),
   })
