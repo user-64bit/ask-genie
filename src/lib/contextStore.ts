@@ -24,7 +24,10 @@ function openDb(): Promise<IDBDatabase> {
       }
     }
     req.onsuccess = () => resolve(req.result)
-    req.onerror = () => reject(req.error)
+    req.onerror = () => {
+      dbPromise = null
+      reject(req.error)
+    }
   })
   return dbPromise
 }
@@ -52,14 +55,10 @@ export async function getContext(id: string): Promise<SelectionContext | undefin
 
 export async function getMany(ids: string[]): Promise<SelectionContext[]> {
   const store = await tx('readonly')
-  const out: SelectionContext[] = []
-  for (const id of ids) {
-    const c = (await reqToPromise(store.get(id))) as SelectionContext | undefined
-    if (c) out.push(c)
-  }
-  // Preserve caller's id order.
-  const rank = new Map(ids.map((id, i) => [id, i]))
-  return out.sort((a, b) => (rank.get(a.id)! - rank.get(b.id)!))
+  const results = await Promise.all(
+    ids.map((id) => reqToPromise<SelectionContext | undefined>(store.get(id))),
+  )
+  return results.filter((c): c is SelectionContext => c !== undefined)
 }
 
 export async function listByPage(pageKey: string): Promise<SelectionContext[]> {
@@ -88,7 +87,7 @@ export async function deleteContext(id: string): Promise<void> {
 
 export async function deleteMany(ids: string[]): Promise<void> {
   const store = await tx('readwrite')
-  for (const id of ids) await reqToPromise(store.delete(id))
+  await Promise.all(ids.map((id) => reqToPromise(store.delete(id))))
 }
 
 export async function clearPageUnpinned(pageKey: string): Promise<void> {
