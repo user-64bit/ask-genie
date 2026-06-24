@@ -11,12 +11,13 @@ import { genieGlyph, icon, type IconName } from '../ui/marks'
 import {
   sendMessage,
   type AskResponse,
+  type AddContextResponse,
   type ChatResponse,
   type ConfigStatus,
   type ContextsResponse,
 } from '../lib/messages'
 import { initSelectionToolbar } from './selection'
-import { renderPills, renderTray, HighlightController, openExpandSheet } from './contexts-ui'
+import { renderPills, renderTray, HighlightController, openExpandSheet, iconForType } from './contexts-ui'
 
 const ROOT_ID = 'ask-genie-root'
 
@@ -56,6 +57,7 @@ interface El {
   messages: HTMLDivElement
   quick: HTMLDivElement
   pills: HTMLDivElement
+  clearCtx: HTMLButtonElement
   input: HTMLTextAreaElement
   send: HTMLButtonElement
 }
@@ -199,6 +201,9 @@ function build(): El {
     attrs: { title: 'Close', 'aria-label': 'Close' },
   })
   closeBtn.appendChild(iconSpan('close'))
+  const savedBtn = el('button', { class: 'ag-icon-btn', attrs: { title: 'Saved contexts', 'aria-label': 'Saved contexts' } })
+  savedBtn.appendChild(iconSpan('bookmark'))
+  savedBtn.addEventListener('click', () => void openSavedLibrary())
 
   const badge = el('span', { class: 'ag-badge' })
   badge.appendChild(svgFrom(genieGlyph()))
@@ -213,7 +218,7 @@ function build(): El {
 
   const header = el('div', { class: 'ag-header' }, [
     el('div', { class: 'ag-brand' }, [badge, titleBlock]),
-    el('div', { class: 'ag-header-actions' }, [clearBtn, closeBtn]),
+    el('div', { class: 'ag-header-actions' }, [savedBtn, clearBtn, closeBtn]),
   ])
 
   const note = el('div', { class: 'ag-note' }, [
@@ -224,14 +229,20 @@ function build(): El {
   ])
   const inputBar = el('div', { class: 'ag-inputbar' }, [input, send])
   const pills = el('div', { class: 'ag-pills ag-hidden', attrs: { role: 'list', 'aria-label': 'Selected contexts' } })
-  const composer = el('div', { class: 'ag-composer' }, [pills, quick, inputBar, note])
+  const clearCtx = el('button', { class: 'ag-pills-clear ag-hidden', attrs: { 'aria-label': 'Clear all contexts' } })
+  clearCtx.append(iconSpan('trash', 'ag-ic'), el('span', { text: 'Clear contexts' }))
+  clearCtx.addEventListener('click', async () => {
+    await sendMessage({ type: 'CLEAR_CONTEXTS', pageKey })
+    void refreshContexts()
+  })
+  const composer = el('div', { class: 'ag-composer' }, [clearCtx, pills, quick, inputBar, note])
 
   const panel = el('div', { class: 'ag-panel ag-hidden' }, [header, messages, composer])
 
   shadow.append(bubble, panel)
   ;(document.documentElement || document.body).appendChild(host)
 
-  const refs: El = { bubble, panel, messages, quick, pills, input, send }
+  const refs: El = { bubble, panel, messages, quick, pills, clearCtx, input, send }
 
   bubble.addEventListener('click', () => openPanel(refs))
   bubble.addEventListener('keydown', (e) => {
@@ -385,9 +396,43 @@ async function submit(rawText: string) {
   refs.input.focus()
 }
 
+async function openSavedLibrary(): Promise<void> {
+  const { contexts } = await sendMessage<ContextsResponse>({ type: 'LIST_SAVED' })
+  const shadow = elements.panel.getRootNode() as ShadowRoot
+  shadow.querySelector('.ag-sheet-backdrop')?.remove()
+  const list = el('div', { class: 'ag-saved-list' })
+  if (contexts.length === 0) {
+    list.appendChild(el('p', { class: 'ag-empty-body', text: "No saved contexts yet. Use a pill's menu to Save for later." }))
+  }
+  for (const c of contexts) {
+    const row = el('button', { class: 'ag-saved-row' })
+    row.append(iconSpan(iconForType(c.type), 'ag-pill-ic'), el('span', { class: 'ag-pill-label', text: c.label }))
+    row.addEventListener('click', async () => {
+      await sendMessage<AddContextResponse>({
+        type: 'ADD_CONTEXT',
+        pageKey,
+        url: location.href,
+        title: document.title,
+        context: { type: c.type, label: c.label, text: c.text, anchor: c.anchor },
+      })
+      backdrop.remove()
+      void refreshContexts()
+    })
+    list.appendChild(row)
+  }
+  const sheet = el('div', { class: 'ag-sheet', attrs: { role: 'dialog', 'aria-label': 'Saved contexts' } }, [
+    el('div', { class: 'ag-sheet-head' }, [iconSpan('bookmark', 'ag-pill-ic'), el('span', { class: 'ag-sheet-title', text: 'Saved contexts' })]),
+    list,
+  ])
+  const backdrop = el('div', { class: 'ag-sheet-backdrop' }, [sheet])
+  backdrop.addEventListener('click', (e) => { if (e.target === backdrop) backdrop.remove() })
+  shadow.appendChild(backdrop)
+}
+
 async function refreshContexts(): Promise<void> {
   const { contexts } = await sendMessage<ContextsResponse>({ type: 'LIST_CONTEXTS', pageKey })
   activeContextIds = contexts.map((c) => c.id)
+  elements.clearCtx.classList.toggle('ag-hidden', contexts.length === 0)
   mo?.disconnect()
   const anchored = highlighter.sync(contexts)
   mo?.observe(document.body, MO_OPTS)

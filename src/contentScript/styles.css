@@ -845,3 +845,13 @@
 @media (prefers-reduced-motion: reduce) {
   .ag-tray-bump { animation: none; }
 }
+
+/* ── Clear contexts control ──────────────────────────────────────────────── */
+.ag-pills-clear { align-self: flex-start; display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; border-radius: 8px; border: 1px solid transparent; background: transparent; color: var(--ag-muted); font: inherit; font-size: 11px; cursor: pointer; }
+.ag-pills-clear:hover { color: var(--ag-danger); background: var(--ag-danger-bg); }
+.ag-pills-clear .ag-ic { width: 12px; height: 12px; }
+
+/* ── Saved context library ───────────────────────────────────────────────── */
+.ag-saved-list { display: flex; flex-direction: column; gap: 4px; max-height: 300px; overflow: auto; }
+.ag-saved-row { display: flex; align-items: center; gap: 8px; padding: 9px 10px; border-radius: 10px; border: 1px solid var(--ag-line); background: var(--ag-field-bg); color: var(--ag-text); font: inherit; font-size: 13px; cursor: pointer; text-align: left; }
+.ag-saved-row:hover { border-color: var(--ag-violet); }
