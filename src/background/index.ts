@@ -23,6 +23,8 @@ import {
   getMany,
   deleteContext,
   clearPageUnpinned,
+  setFlag,
+  listSaved,
 } from '../lib/contextStore'
 import {
   createContext,
@@ -204,6 +206,21 @@ async function handle(req: RuntimeRequest, sender: chrome.runtime.MessageSender)
     case 'CLEAR_CONTEXTS': {
       await clearPageUnpinned(req.pageKey)
       return { ok: true } satisfies OkResponse
+    }
+
+    case 'LOCK_CONTEXT': {
+      await setFlag(req.id, { locked: req.locked })
+      return { ok: true } satisfies OkResponse
+    }
+
+    case 'SAVE_CONTEXT': {
+      await setFlag(req.id, { saved: req.saved })
+      return { ok: true } satisfies OkResponse
+    }
+
+    case 'LIST_SAVED': {
+      const contexts = await listSaved()
+      return { contexts } satisfies ContextsResponse
     }
 
     case 'ASK':

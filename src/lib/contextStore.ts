@@ -95,3 +95,14 @@ export async function clearPageUnpinned(pageKey: string): Promise<void> {
   const ids = page.filter((c) => !c.locked && !c.saved).map((c) => c.id)
   await deleteMany(ids)
 }
+
+export async function setFlag(
+  id: string,
+  patch: Partial<Pick<SelectionContext, 'locked' | 'saved'>>,
+): Promise<SelectionContext | undefined> {
+  const c = await getContext(id)
+  if (!c) return undefined
+  const updated = { ...c, ...patch }
+  await putContext(updated)
+  return updated
+}
