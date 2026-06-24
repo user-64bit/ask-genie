@@ -17,7 +17,6 @@ import {
 } from '../lib/messages'
 import { initSelectionToolbar } from './selection'
 import { renderPills, renderTray, HighlightController } from './contexts-ui'
-import type { SelectionContext } from '../lib/contexts'
 
 const ROOT_ID = 'ask-genie-root'
 
@@ -64,7 +63,7 @@ interface El {
 let chatLoaded = false
 let configured = false
 let busy = false
-const pageKey = makePageKey(location.href)
+let pageKey = makePageKey(location.href)
 let activeContextIds: string[] = []
 const highlighter = new HighlightController()
 
@@ -434,7 +433,37 @@ function init() {
   })
   void sendMessage({ type: 'REGISTER_PAGE', pageKey })
   void refreshContexts()
+  window.setTimeout(() => void refreshContexts(), 600)
+  window.addEventListener('load', () => void refreshContexts(), { once: true })
+
+  let reanchorTimer = 0
+  const mo = new MutationObserver(() => {
+    window.clearTimeout(reanchorTimer)
+    reanchorTimer = window.setTimeout(() => void refreshContexts(), 500)
+  })
+  mo.observe(document.body, { childList: true, subtree: true, characterData: true })
 }
+
+function onUrlChange() {
+  const next = makePageKey(location.href)
+  if (next === pageKey) return
+  pageKey = next
+  chatLoaded = false
+  highlighter.clear()
+  void sendMessage({ type: 'REGISTER_PAGE', pageKey })
+  void refreshContexts()
+}
+
+;(['pushState', 'replaceState'] as const).forEach((m) => {
+  const orig = history[m]
+  history[m] = function (this: History, ...args: Parameters<History['pushState']>) {
+    const ret = orig.apply(this, args)
+    window.dispatchEvent(new Event('ag-locationchange'))
+    return ret
+  } as History[typeof m]
+})
+window.addEventListener('popstate', () => window.dispatchEvent(new Event('ag-locationchange')))
+window.addEventListener('ag-locationchange', () => window.setTimeout(onUrlChange, 300))
 
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', init, { once: true })
