@@ -123,6 +123,27 @@ export function initSelectionToolbar(shadow: ShadowRoot, opts: ToolbarOpts): voi
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') remove()
   })
+  document.addEventListener('keydown', async (e) => {
+    const target = e.target as HTMLElement | null
+    if (target?.closest('input, textarea, [contenteditable=""], [contenteditable="true"]')) return
+    const mod = e.metaKey || e.ctrlKey
+    // Add selection as context: Cmd/Ctrl+Shift+J (A and S are reserved by Chrome).
+    if (mod && e.shiftKey && (e.key === 'j' || e.key === 'J')) {
+      const ok = await capture()
+      if (ok) {
+        opts.onAdded()
+        e.preventDefault()
+      }
+    }
+    // Ask about selection while the toolbar is live: Cmd/Ctrl+Enter.
+    if (mod && e.key === 'Enter' && bar) {
+      await capture()
+      remove()
+      opts.onAsk()
+      opts.onAdded()
+      e.preventDefault()
+    }
+  })
   window.addEventListener('scroll', remove, { passive: true })
   window.addEventListener('resize', remove)
 }

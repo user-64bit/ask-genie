@@ -30,6 +30,12 @@ export default defineManifest({
       js: ['src/contentScript/index.ts'],
     },
   ],
+  commands: {
+    'open-genie': {
+      suggested_key: { default: 'Ctrl+Shift+G', mac: 'Command+Shift+G' },
+      description: 'Open Ask Genie on this page',
+    },
+  },
   permissions: ['storage', 'tabs', 'alarms'],
   host_permissions: ['https://api.openai.com/*', 'https://api.anthropic.com/*'],
 })

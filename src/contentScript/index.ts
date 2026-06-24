@@ -506,6 +506,9 @@ function init() {
     onAdded: () => void refreshContexts(),
     onAsk: () => openPanel(elements),
   })
+  chrome.runtime.onMessage.addListener((msg: { type?: string }) => {
+    if (msg?.type === 'OPEN_GENIE') openPanel(elements)
+  })
   void sendMessage({ type: 'REGISTER_PAGE', pageKey })
   void refreshContexts()
   window.setTimeout(() => void refreshContexts(), 600)

@@ -228,6 +228,14 @@ async function handle(req: RuntimeRequest, sender: chrome.runtime.MessageSender)
   }
 }
 
+chrome.commands.onCommand.addListener(async (command) => {
+  if (command !== 'open-genie') return
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
+  if (tab?.id != null) {
+    chrome.tabs.sendMessage(tab.id, { type: 'OPEN_GENIE' }).catch(() => {})
+  }
+})
+
 chrome.runtime.onMessage.addListener((req: RuntimeRequest, sender, sendResponse) => {
   handle(req, sender)
     .then(sendResponse)
