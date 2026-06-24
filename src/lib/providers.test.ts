@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { buildRequest, parseResponse, parseError, defaultModelFor, isKnownModel } from './providers'
+import { buildRequest, parseResponse, parseError, defaultModelFor, isKnownModel, buildSystemPrompt } from './providers'
 
 const history = [
   { role: 'user' as const, content: 'Hi' },
@@ -84,5 +84,35 @@ describe('model registry', () => {
     expect(defaultModelFor('anthropic')).toBe('claude-haiku-4-5')
     expect(isKnownModel('anthropic', 'claude-sonnet-4-6')).toBe(true)
     expect(isKnownModel('anthropic', 'gpt-4o')).toBe(false)
+  })
+})
+
+describe('buildSystemPrompt — selected contexts', () => {
+  it('omits the selected block when there are no selections', () => {
+    const p = buildSystemPrompt('T', 'http://x', 'page body')
+    expect(p).not.toContain('SELECTED CONTEXT')
+    expect(p).toContain('page body')
+  })
+
+  it('places selected context before page content and numbers it', () => {
+    const p = buildSystemPrompt('T', 'http://x', 'page body', [
+      { label: 'Auth · Code', type: 'code', text: 'const t = sign()' },
+      { label: 'API Error', type: 'error', text: 'status 500' },
+    ])
+    const selIdx = p.indexOf('SELECTED CONTEXT')
+    const pageIdx = p.indexOf('BEGIN PAGE CONTENT')
+    expect(selIdx).toBeGreaterThan(-1)
+    expect(selIdx).toBeLessThan(pageIdx)
+    expect(p).toContain('[1]')
+    expect(p).toContain('Auth · Code')
+    expect(p).toContain('[2]')
+    expect(p).toContain('API Error')
+  })
+
+  it('instructs the model to prioritize selected context', () => {
+    const p = buildSystemPrompt('T', 'http://x', 'page', [
+      { label: 'L', type: 'text', text: 'sel' },
+    ])
+    expect(p.toLowerCase()).toContain('prioritize')
   })
 })

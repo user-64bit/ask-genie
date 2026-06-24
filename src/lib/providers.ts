@@ -4,6 +4,7 @@
 
 import type { Provider } from './config'
 import type { StoredMessage } from './chats'
+import type { ContextType } from './contexts'
 
 export interface ProviderModel {
   id: string
@@ -53,21 +54,53 @@ export function isKnownModel(provider: Provider, model: string): boolean {
 
 const MAX_TOKENS = 1024
 
-export function buildSystemPrompt(title: string, url: string, context: string): string {
-  return [
+export interface PromptContext {
+  label: string
+  type: ContextType
+  text: string
+}
+
+export function buildSystemPrompt(
+  title: string,
+  url: string,
+  context: string,
+  selected: PromptContext[] = [],
+): string {
+  const lines = [
     "You are Ask Genie, a helpful assistant embedded in the user's web browser.",
-    'Answer the user’s questions about the web page they are currently viewing.',
-    'Ground your answers in the page content below. If the answer is not present on',
-    'the page, say so briefly and then answer from general knowledge, making clear it',
-    'is not from the page. Be concise and format answers with Markdown.',
-    '',
+    "Answer the user's questions about the web page they are currently viewing.",
+  ]
+
+  if (selected.length > 0) {
+    lines.push(
+      'The user has explicitly SELECTED the context blocks below. Prioritize them',
+      'over the general page content; they represent what the user cares about most.',
+      'When you use one, refer to it by its label. Be concise and use Markdown.',
+      '',
+      '=== SELECTED CONTEXT (highest priority) ===',
+    )
+    selected.forEach((c, i) => {
+      lines.push(`[${i + 1}] (${c.type} · ${c.label})`, c.text, '')
+    })
+    lines.push('=== END SELECTED CONTEXT ===', '')
+  } else {
+    lines.push(
+      'Ground your answers in the page content below. If the answer is not present on',
+      'the page, say so briefly and then answer from general knowledge, making clear it',
+      'is not from the page. Be concise and format answers with Markdown.',
+      '',
+    )
+  }
+
+  lines.push(
     `Page title: ${title || 'Untitled'}`,
     `Page URL: ${url}`,
     '',
     '--- BEGIN PAGE CONTENT ---',
     context || '(No readable content could be extracted from this page.)',
     '--- END PAGE CONTENT ---',
-  ].join('\n')
+  )
+  return lines.join('\n')
 }
 
 export interface ProviderRequest {
