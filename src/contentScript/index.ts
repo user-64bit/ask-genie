@@ -398,7 +398,23 @@ async function refreshContexts(): Promise<void> {
   renderTray(elements.panel.getRootNode() as ShadowRoot, contexts.length, () => openPanel(elements))
 }
 
+function injectPageStyles() {
+  const id = 'ask-genie-hl-styles'
+  if (document.getElementById(id)) return
+  const tag = document.createElement('style')
+  tag.id = id
+  tag.textContent = `
+    mark.ag-ctx-hl{background:rgba(255,198,97,.22);border-bottom:2px solid rgba(255,198,97,.7);color:inherit;border-radius:2px;padding:0 1px;transition:background .2s}
+    mark.ag-ctx-hl:hover{background:rgba(255,198,97,.34)}
+    mark.ag-ctx-flash{animation:ag-ctx-sweep 1s ease}
+    @keyframes ag-ctx-sweep{0%{background:rgba(255,198,97,.55)}100%{background:rgba(255,198,97,.22)}}
+    @media (prefers-reduced-motion:reduce){mark.ag-ctx-flash{animation:none}}
+  `
+  document.head.appendChild(tag)
+}
+
 function init() {
+  injectPageStyles()
   if (document.getElementById(ROOT_ID)) return // idempotent: never inject twice
   elements = build()
   initSelectionToolbar(elements.panel.getRootNode() as ShadowRoot, {
