@@ -25,6 +25,8 @@ import {
   clearPageUnpinned,
   setFlag,
   listSaved,
+  pruneExpiredContexts,
+  ensureQuota,
 } from '../lib/contextStore'
 import {
   createContext,
@@ -70,7 +72,10 @@ chrome.runtime.onInstalled.addListener(async () => {
 })
 
 chrome.alarms.onAlarm.addListener((alarm) => {
-  if (alarm.name === PRUNE_ALARM) void loadChats()
+  if (alarm.name === PRUNE_ALARM) {
+    void loadChats()
+    void pruneExpiredContexts(Date.now(), CHAT_EXPIRY_MS)
+  }
 })
 
 chrome.tabs.onRemoved.addListener(async (tabId) => {
@@ -183,6 +188,7 @@ async function handle(req: RuntimeRequest, sender: chrome.runtime.MessageSender)
         now: Date.now(),
       })
       await putContext(context)
+      void ensureQuota()
       return { ok: true, context } satisfies AddContextResponse
     }
 

@@ -2,7 +2,7 @@
 // IndexedDB store for selected contexts. MUST run in the background service
 // worker only — IndexedDB opened from a content script uses the host page's
 // origin (leaky, per-page). The extension origin keeps this isolated.
-import { sortByOrder, type SelectionContext } from './contexts'
+import { selectEvictions, sortByOrder, type SelectionContext } from './contexts'
 
 const DB_NAME = 'ask-genie'
 const DB_VERSION = 1
@@ -105,4 +105,21 @@ export async function setFlag(
   const updated = { ...c, ...patch }
   await putContext(updated)
   return updated
+}
+
+export async function pruneExpiredContexts(now: number, maxAgeMs: number): Promise<void> {
+  const all = await allContexts()
+  const stale = all
+    .filter((c) => !c.locked && !c.saved && now - c.createdAt >= maxAgeMs)
+    .map((c) => c.id)
+  await deleteMany(stale)
+}
+
+export async function ensureQuota(): Promise<void> {
+  if (!navigator.storage?.estimate) return
+  const { usage = 0, quota = 0 } = await navigator.storage.estimate()
+  if (quota && usage / quota > 0.9) {
+    const all = await allContexts()
+    await deleteMany(selectEvictions(all, Math.ceil(all.length * 0.2)))
+  }
 }
