@@ -174,7 +174,7 @@
     border-color 0.15s,
     transform 0.05s;
 }
-.pp-btn svg {
+.pp-btn .ag-svg {
   width: 16px;
   height: 16px;
 }
@@ -208,7 +208,7 @@
   line-height: 1.4;
   color: var(--muted);
 }
-.pp-trust svg {
+.pp-trust .ag-svg {
   flex: none;
   width: 15px;
   height: 15px;

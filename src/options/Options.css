@@ -68,7 +68,7 @@
   border: 1px solid rgba(124, 92, 255, 0.3);
   color: var(--violet-2);
 }
-.opt-card-ic svg {
+.opt-card-ic .ag-svg {
   width: 18px;
   height: 18px;
 }
@@ -182,7 +182,7 @@
 .opt-key-toggle:hover {
   color: var(--text);
 }
-.opt-key-toggle svg {
+.opt-key-toggle .ag-svg {
   width: 18px;
   height: 18px;
 }
@@ -200,7 +200,7 @@
   text-decoration: none;
   width: fit-content;
 }
-.opt-link svg {
+.opt-link .ag-svg {
   width: 13px;
   height: 13px;
 }
@@ -314,7 +314,7 @@
     background 0.15s;
   white-space: nowrap;
 }
-.opt-danger-btn svg {
+.opt-danger-btn .ag-svg {
   width: 15px;
   height: 15px;
 }
@@ -353,7 +353,7 @@
     filter 0.15s,
     transform 0.05s;
 }
-.opt-save svg {
+.opt-save .ag-svg {
   width: 16px;
   height: 16px;
 }
